@@ -184,7 +184,7 @@
                                                                         <p class=""  style="text-align:center;">Price '.((!empty($item['price_info']))?$item['price_info']['currency_code'].' '.$item['price_info']['price_amount']:'-').'</p>
                                                                     </div>
                                                                     <div class="col-xs-12 col-md-12 ">
-                                                                        <a id="'.$item['item_id'].'_btn_view"  target="_blank" href="'.base_url($this->router->fetch_class().'/view_item/'.$item['item_id'].'/'.$item['item_category_id'].'_'.$order_id.'/'.$page_no).'" class="itm_btn_view btn btn-default center-block "  >View</a>
+                                                                        <a id="'.$item['item_id'].'_btn_view"  target="_blank" href="'.base_url($this->router->fetch_class().'/view_item/'.$item['item_id'].'/'.$category_id.'_'.$order_id.'_'.$price_type_id.'/'.$page_no).'" class="itm_btn_view btn btn-default center-block "  >View</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -208,7 +208,8 @@
     </div>
 
       <p class="pagination">
-          <a class="pagination__next" href="<?php echo base_url($this->router->fetch_class().'/image_loader/'.$category_id.'/'.$page_no);?>">Next page</a>
+          <a class="pagination__next" href="<?php echo base_url($this->router->fetch_class().'/image_loader/'.$category_id.'_'.$order_id.'_'.$price_type_id.'/'.($page_no+1));?>">Next page</a>
+          
       </p>
  
 

@@ -113,7 +113,7 @@ class Stock_sheet extends CI_Controller {
                                 <th width="14%" align="left">Code</th> 
                                 <th width="23%" align="left">Desc</th> 
                                 <th width="21%" align="center" colspan="2">In Stock</th> 
-                                <th width="21%" align="center" colspan="2">On Reserved</th>  
+                                <th width="21%" align="center" colspan="2">On Order</th>  
                                 <th width="21%" align="center" colspan="2">Available</th>
                             </tr>
                             <tr class="colored_bg">
@@ -135,7 +135,7 @@ class Stock_sheet extends CI_Controller {
                                                         <td width="23%" align="left">'.$item['item_name'].'</td>
                                                         <td width="11%" align="right" >'.$item['units_available'].' '.$item['uom_name'].'</td>
                                                         <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;">'.(($item['uom_id_2']!=0)?$item['units_available_2'].' '.$item['uom_name_2']:'-').'</td>
-                                                        <td width="11%" align="right">'.$item['units_on_reserve'].' '.$item['uom_name'].'</td>
+                                                        <td width="11%" align="right">'.$item['units_on_order'].' '.$item['uom_name'].'</td>
                                                         <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;">'.(($item['uom_id_2']!=0)?$item['units_on_reserve_2'].' '.$item['uom_name_2']:'').'</td>
                                                         <td width="11%" align="right">'.($item['units_available']-$item['units_on_reserve']).' '.$item['uom_name'].'</td>
                                                         <td width="10%" align="center">'.($item['units_available_2']-$item['units_on_reserve_2']).' '.$item['uom_name_2'].'</td>

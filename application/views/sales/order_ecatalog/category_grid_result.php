@@ -17,10 +17,10 @@
 
                         <div class="caption">
                             <div class="mailbox-attachment-info"  style="text-align:center;">
-                            <a href="'. base_url($this->router->fetch_class().'/item_list/'.$search['id'].'_'.$order_id.'/1').'" class="mailbox-attachment-name center">'.$search['category_name'].'</a> 
+                            <a href="'. base_url($this->router->fetch_class().'/item_list/'.$search['id'].'_'.$order_id.'_'.$price_type_id.'/1').'" class="mailbox-attachment-name center">'.$search['category_name'].'</a> 
                           </div>
                         </div>
-                          <a href="'. base_url($this->router->fetch_class().'/item_list/'.$search['id'].'_'.$order_id.'/1').'"> <img src="'. base_url(CAT_IMAGES.(($search['cat_image']!='')?$search['id'].'/'.$search['cat_image']:'../default/default.jpg')).'" alt="'.$search['category_name'].'" style="width:100%;overflow: hidden"></a>
+                          <a href="'. base_url($this->router->fetch_class().'/item_list/'.$search['id'].'_'.$order_id.'_'.$price_type_id.'/1').'"> <img src="'. base_url(CAT_IMAGES.(($search['cat_image']!='')?$search['id'].'/'.$search['cat_image']:'../default/default.jpg')).'" alt="'.$search['category_name'].'" style="width:100%;overflow: hidden"></a>
                     </div>
                   </div>';
         }

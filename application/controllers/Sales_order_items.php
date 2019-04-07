@@ -61,7 +61,7 @@ class Sales_order_items extends CI_Controller {
 	function delete($id){ 
             $data  			= $this->load_data($id);
             $data['action']		= 'Delete';
-            $data['main_content']='invoices/view_invoice'; 
+            $data['main_content']='sales_order_items/manage_sales_orders'; 
             $data['inv_data'] = $this->get_salesorder_info($id);
             
             $this->load->view('includes/template',$data); 
@@ -70,7 +70,7 @@ class Sales_order_items extends CI_Controller {
 	function view($id){ 
             $data  			= $this->load_data($id);
             $data['action']		= 'View';
-            $data['main_content']='invoices/view_invoice'; 
+            $data['main_content']='sales_order_items/manage_sales_orders'; 
             $data['inv_data'] = $this->get_salesorder_info($id);
             $this->load->view('includes/template',$data);
 	}
@@ -238,7 +238,7 @@ class Sales_order_items extends CI_Controller {
                 } 
 	}
         
-        function stock_status_check($item_id,$loc_id,$uom,$units=0,$uom_2='',$units_2=0){ //updatiuon for item_stock table
+        function stock_status_check($item_id,$loc_id,$uom,$units=0,$uom_2='',$units_2=0,$del=false){ //updatiuon for item_stock table
             $this->load->model('Item_stock_model');
 //            echo '<pre>';            print_r($this->input->post()); die;
             $stock_det = $this->Item_stock_model->get_single_row('',"location_id = '$loc_id' and item_id = '$item_id'");
@@ -262,12 +262,17 @@ class Sales_order_items extends CI_Controller {
                 $available_units_2 = $units_2;
                 $units_on_demand = $units;
             }else{
-                
-//                $stock_trans_det = $this->Item_stock_model->get_stock_transection($this->input->post('id'));
-//                echo '<pre>';            print_r($stock_trans_det); die;
-                $available_units = $stock_det['units_available'] - $units;
-                $available_units_2 = $stock_det['units_available_2'] - $units_2;
-                $units_on_demand = $stock_det['units_on_demand'] + $units;
+                if(!$del){
+    //                $stock_trans_det = $this->Item_stock_model->get_stock_transection($this->input->post('id'));
+    //                echo '<pre>';            print_r($stock_trans_det); die;
+                    $available_units = $stock_det['units_available'] - $units;
+                    $available_units_2 = $stock_det['units_available_2'] - $units_2;
+                    $units_on_demand = $stock_det['units_on_demand'] + $units;
+                }else{//delete order
+                    $available_units = $stock_det['units_available'] + $units;
+                    $available_units_2 = $stock_det['units_available_2'] + $units_2;
+                    $units_on_demand = $stock_det['units_on_demand'] - $units;
+                }
             }
                 $update_arr = array('location_id'=>$loc_id,'item_id'=>$item_id,'new_units_available'=>$available_units,'new_units_available_2'=>$available_units_2,'units_on_demand'=>$units_on_demand);
             return $update_arr;
@@ -400,32 +405,64 @@ class Sales_order_items extends CI_Controller {
             } 
 	}	
         
+        
         function remove(){
             $inputs = $this->input->post(); 
             //check the payments before delete reservation
-            $trans_data = $this->Sales_order_items_model->get_transections($inputs['id']);
+            $this->load->model('Payments_model');
+            $trans_data = $this->Payments_model->get_transections(11,$inputs['id'],'t.transection_type_id = 1'); //11 for SO customer type 1 for payments
+//           
+//            echo '<pre>';            print_r($trans_data); die;
+//            $trans_data = $this->Sales_orders_model->get_transections($inputs['id']);
             if(!empty($trans_data)){
                 $this->session->set_flashdata('error','You need to remove the Payments transections before delete Invoice!');
                 redirect(base_url($this->router->fetch_class().'/delete/'.$inputs['id']));
                 return false;
             }
-            $data = array(
+            $data{'del_arr'} = array(
                             'deleted' => 1,
                             'deleted_on' => date('Y-m-d'),
                             'deleted_by' => $this->session->userdata(SYSTEM_CODE)['ID']
                          ); 
                 
+            foreach ($inputs['inv_items'] as $inv_item){
+                
+                $data['item_stock_transection'][] = array(
+                                                            'transection_type'=>6, //6 for Sales Order transection
+                                                            'trans_ref'=>$inputs['id'], 
+                                                            'item_id'=>$inv_item['item_id'], 
+                                                            'units'=>$inv_item['item_quantity'], 
+                                                            'uom_id'=>$inv_item['item_quantity_uom_id'], 
+                                                            'units_2'=>$inv_item['item_quantity_2'], 
+                                                            'uom_id_2'=>$inv_item['item_quantity_uom_id_2'], 
+                                                            'location_id'=>$inputs['location_id'], 
+                                                            'status'=>1, 
+                                                            'added_on' => date('Y-m-d'),
+                                                            'added_by' => $this->session->userdata(SYSTEM_CODE)['ID'],
+                                                            );
+                
+                if($inv_item['item_quantity_uom_id_2']!=0)
+                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],$inv_item['item_quantity_uom_id_2'],$inv_item['item_quantity_2'],true);
+                else
+                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],'',0,true);
+                
+                if(!empty($item_stock_data)){
+                    $data['item_stock'][] = $item_stock_data;
+                }
+                
+            }
+            
             $existing_data = $this->Sales_order_items_model->get_single_row($inputs['id']);  
             $delete_stat = $this->Sales_order_items_model->delete_db($inputs['id'],$data);
                     
             if($delete_stat){
                 //update log data
-                add_system_log(INVOICES, $this->router->fetch_class(), __FUNCTION__,$existing_data, '');
+                add_system_log(SALES_ORDERS, $this->router->fetch_class(), __FUNCTION__,$existing_data, '');
                 $this->session->set_flashdata('warn',RECORD_DELETE);
-                redirect(base_url('Invoice_list'));
+                redirect(base_url($this->router->fetch_class()));
             }else{
                 $this->session->set_flashdata('warn',ERROR);
-                redirect(base_url('Invoice_list'));
+                redirect(base_url($this->router->fetch_class()));
             }  
 	}
 	
@@ -562,7 +599,147 @@ class Sales_order_items extends CI_Controller {
             echo '<pre>' ; print_r($data);die;
 //            log_message('error', 'Some variable did not contain a value.');
         }
+        
         function print_sales_order($inv_id){
+//            echo '<pre>';            print_r($this->get_salesorder_info(1)); die;
+            $inv_data = $this->get_salesorder_info($inv_id);
+            $inv_dets = $inv_data['order_dets'];
+            $inv_desc = $inv_data['order_desc']; 
+            $this->load->library('Pdf');
+            
+            // create new PDF document
+            $pdf = new Pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->fl_header='header_am';//invice bg
+            $pdf->fl_data_arr=array('order_no'=>$inv_dets['sales_order_no']);//invice bg
+            
+            // set document information
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('Fahry Lafir');
+            $pdf->SetTitle('PDF AM Invoice');
+            $pdf->SetSubject('AM Invoice');
+            $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+            
+            // set default header data
+            $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+            // set header and footer fonts
+            $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+            $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+            // set margins
+            $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+            // set auto page breaks
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+            // set image scale factor
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+                    
+            // set font
+            $pdf->SetFont('times', '', 11);
+        
+        
+            $pdf->AddPage();   
+            
+            
+            
+            $pdf->SetTextColor(32,32,32);     
+            
+            $html = '<table>
+                        <tr>
+                            <td>Order Date: '.date('m/d/Y',$inv_dets['order_date']).'</td>
+                            <td align="right">Required Date: '.date('m/d/Y',$inv_dets['required_date']).'</td> 
+                        </tr>
+                        <tr> 
+                            <td colspan="2" align="center"><h1>Sales Order</h1></td>
+                        </tr>  
+                        <tr>
+                            <td>Sold to: '.$inv_dets['customer_name'].'</td>
+                            <td align="right">Branch: '.$inv_dets['branch_name'].'</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Contact Number: '.$inv_dets['phone'].'</td>
+                            <td align="right"></td>
+                        </tr>
+                        <tr><td  colspan="5"><br></td></tr>
+                    </table> 
+                ';
+           
+//            echo '<pre>';            print_r($inv_data); die; 
+                     $html .= '<table id="example1" class="table-line" border="0">
+                                <thead> 
+                                    <tr style="">
+                                         <th width="12%" style="text-align: left;"><u><b>NL NO</b></u></th>  
+                                         <th width="35%" style="text-align: left;"><u><b>Description</b></u></th>  
+                                         <th  width="10%"><u><b>Qty</b></u></th> 
+                                         <th width="23%" style="text-align: right;"><u><b>Rate</b></u></th> 
+                                          <th width="20%" style="text-align: right;"><u><b>Total</b></u></th> 
+                                     </tr>
+                                </thead>
+                            <tbody>';
+                     $order_total = 0;
+                     foreach ($inv_desc as $inv_itm){
+                         $html .= '<tr>
+                                        <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                        <td width="35%" style="text-align: left;">'.$inv_itm['item_desc'].'</td> 
+                                        <td width="10%">'.$inv_itm['units'].'</td>  
+                                        <td width="23%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
+                                         <td width="20%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
+                                    </tr> ';
+                         $order_total+=$inv_itm['sub_total'];
+                     } 
+                     $html .= '
+                                <tr><td  colspan="5"></td></tr></tbody></table>';  
+            $html .= '
+                    
+                    <table id="example1" class="table-line" border="0">
+                        
+                       <tbody> '; 
+                    
+                        $html .= '<tr>
+                                    <td  style="text-align: right;" colspan="4"><b>Total</b></td> 
+                                    <td width="19%"  style="text-align: right;"><b>'.$inv_dets['symbol_left'].' '. number_format($order_total,2).'</b></td> 
+                                </tr> 
+                        </tbody>
+                    </table>
+                                                               
+                ';
+             $html .= '
+            <style>
+            .colored_bg{
+                background-color:#E0E0E0;
+            }
+            .table-line th, .table-line td {
+                padding-bottom: 2px;
+                border-bottom: 1px solid #ddd; 
+            }
+            .text-right,.table-line.text-right{
+                text-align:right;
+            }
+            .table-line tr{
+                line-height: 22px;
+            }
+            </style>
+                    ';
+            $pdf->writeHTML($html);
+            
+            $pdf->SetFont('times', '', 12.5, '', false);
+            $pdf->SetTextColor(255,125,125);           
+//            $pdf->Text(160,20,$inv_dets['sales_order_no']);
+            // force print dialog
+            $js = 'this.print();';
+//            $js = 'print(true);';
+            // set javascript
+            $pdf->IncludeJS($js);
+            $pdf->Output($inv_dets['sales_order_no'].'.pdf', 'I');
+                
+        }
+        function print_sales_order_del1($inv_id){
 //            echo '<pre>';            print_r($this->get_salesorder_info(1)); die;
             $inv_data = $this->get_salesorder_info($inv_id);
             $inv_dets = $inv_data['order_dets'];

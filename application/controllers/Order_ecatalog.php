@@ -11,6 +11,8 @@ class Order_ecatalog extends CI_Controller {
 
         public function index($so_id=''){
             $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Categories');
+            $data['sales_type_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','','dropdown_id = 14'); //14 for sales type
+            
             $data['order_id'] = $so_id;
             $data['main_content']='sales/order_ecatalog/category_grid';  
             $this->load->view('includes/template',$data);
@@ -19,6 +21,8 @@ class Order_ecatalog extends CI_Controller {
         public function item_list($cat_id="", $page_no='1'){
             $cat_arr = explode('_',$cat_id); 
             $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Categories');
+            $data['sales_type_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','','dropdown_id = 14'); //14 for sales type
+            
             $data['category_id'] = $cat_arr[0];
             $data['order_id'] = $cat_arr[1];
             $data['page_no'] = $page_no; 
@@ -29,6 +33,7 @@ class Order_ecatalog extends CI_Controller {
         public function image_loader($cat_id="", $page_no='1'){
             $cat_arr = explode('_',$cat_id); 
             $cat_id = $cat_arr[0];
+            $price_type_id = (isset($cat_arr[2]))?$cat_arr[2]:'';
 //            $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Categories');
             
             $cur_page = (isset($page_no) && $page_no>0)?$page_no:1 ;
@@ -39,7 +44,7 @@ class Order_ecatalog extends CI_Controller {
                                 );
             
             $item_res = $this->Order_ecataog_modal->search_items($search_data,9,$page_limit_from);  
-//                    echo '<pre>';            print_r($item_res); die;
+//                    echo '<pre>';            print_r($cur_page); die;
             $data = array();
             if(!empty($item_res)){
                 foreach ($item_res as $item){ 
@@ -49,15 +54,18 @@ class Order_ecatalog extends CI_Controller {
                     
                 }
             }
+//                    echo '<pre>';            print_r($inputs); die;
             $data['category_id'] = $cat_id;
             $data['order_id'] = $cat_arr[1];
             $data['page_no'] = $cur_page; 
+            $data['price_type_id'] = $price_type_id; 
             $data['main_content']='sales/order_ecatalog/item_grid_img_loader';  
             $this->load->view('includes/template',$data);
 	}
         
         function search_cats($ret_arr=0){
             $input = $this->input->post();
+//            echo '<pre>';            print_r($input['price_type_id']); die;
             $search_data=array(  
                                 'category_id' => $input['category_id'],  
                                 'item_code' => $input['item_code'],  
@@ -65,6 +73,7 @@ class Order_ecatalog extends CI_Controller {
                                 ); 
             $data['categories_res'] = $this->Order_ecataog_modal->search_categories($search_data); 
             $data['order_id'] = $input['order_id'];
+            $data['price_type_id'] = $input['price_type_id'];
 //		$data_view['search_list'] = $this->Order_ecataog_modal->search_result();
             $this->load->view('sales/order_ecatalog/category_grid_result',$data);
 	}
@@ -78,7 +87,6 @@ class Order_ecatalog extends CI_Controller {
             $cur_page = (isset($input['curr_page_no']) && $input['curr_page_no']>0)?$input['curr_page_no']:1 ;
             $page_limit_from = 9*($cur_page-1);
             $item_res = $this->Order_ecataog_modal->search_items($search_data,9,$page_limit_from); 
-//                    echo '<pre>';            print_r($input); die;
             $data = array();
             if(!empty($item_res)){
                 foreach ($item_res as $item){ 
@@ -89,7 +97,8 @@ class Order_ecatalog extends CI_Controller {
                     }
                 }
             }
-            $data['category_id1'] = $input['item_category_id'];
+            $data['category_id1'] =$input['item_category_id'];
+            $data['price_type_id1'] = $input['price_type_id'];
             $data['cur_page1'] = $cur_page;
             $data['order_id'] = $input['order_id'];
 //            echo '<pre>';            print_r($data); die;
@@ -128,6 +137,7 @@ class Order_ecatalog extends CI_Controller {
             $data['item_cat_id'] = $item_categorty_id;
             $data['item_list_page_no'] = $page_no;
             $data['order_id'] = (isset($cat_arr[1]))?$cat_arr[1]:'';
+            $data['price_type_id'] = (isset($cat_arr[2]))?$cat_arr[2]:'';
             $data['main_content']='sales/order_ecatalog/item_single_view';  
             $this->load->view('includes/template_rep',$data);
         }
@@ -204,7 +214,7 @@ class Order_ecatalog extends CI_Controller {
             echo $ret_res;
         }
         
-        function remove_temp_so_item(){ 
+        function remove_temp_so_item(){
             $inputs = $this->input->post();
             $cur_user_id = $this->session->userdata(SYSTEM_CODE)['ID'];
             $reference = $cur_user_id.'_so_'.((isset($inputs['order_id']))?$inputs['order_id']:0);
@@ -214,18 +224,23 @@ class Order_ecatalog extends CI_Controller {
 //            echo '<pre>';            print_r($open_tmp_order); die;
             $open_curr_value = json_decode($open_tmp_order['value'],true);
             unset($open_curr_value[$inputs['del_itemid']]);
-            
-            
-            $update_arr = array(
-                                    'value' => json_encode($open_curr_value),
-                                    'updated_time' => time(),
-                                );
+            $ret_res = 0;
+            if(empty($open_curr_value)){//remove temp row empty unsvaed items
+                $cur_user_id = $this->session->userdata(SYSTEM_CODE)['ID'];
+                $reference = $cur_user_id.'_so_'.((isset($inputs['order_id']))?$inputs['order_id']:0);
+                $ret_res = $this->Order_ecataog_modal->cancel_temp_opened_order($reference);
+            }else{
+                $update_arr = array(
+                                        'value' => json_encode($open_curr_value),
+                                        'updated_time' => time(),
+                                    );
 
-            $ret_res = $this->Order_ecataog_modal->update_temp_item($open_tmp_order['id'], $update_arr);
+                $ret_res = $this->Order_ecataog_modal->update_temp_item($open_tmp_order['id'], $update_arr);
+            }
             echo $ret_res;
         }
                 
-        function cancel_open_temp_order(){ //remove from from  temp order
+        function cancel_open_temp_order($order_id=''){ //remove from from  temp order
             
             $input = $this->input->post();
 //            echo '<pre>';            print_r($input); die;

@@ -25,6 +25,7 @@
                         );   		
 	
 	 $add_hide = '';
+	 $del_hide = '';
 	switch($action):
 	case 'Add':
 		$heading	= 'Add';
@@ -48,6 +49,7 @@
 		$dis		= 'readonly';
 		$view		= '';
 		$o_dis		= ''; 
+                $del_hide       = 'hide';
 		$check_bx_dis		= 'disabled'; 
 	break;
       
@@ -88,8 +90,9 @@ endswitch;
             <a href="<?php echo base_url('Sales_order_items');?>" class="btn btn-app "><i class="fa fa-list"></i>Order List</a>
             <a href="<?php echo base_url('Order_ecatalog'.(($result['id']!='' && $result['id']!=0)?'/index/'.$result['id']:''));?>" class="btn btn-app "><i class="fa fa-plus-circle"></i>Add Item</a>
             <!--<a href="#" id="add_old_gold" class="btn btn-app "><i class="fa fa-chain"></i>Old Gold</a>-->
-            <a href="<?php echo base_url($this->router->fetch_class().'/print_sales_order/'.$result['id']);?>" class=" <?php echo $add_hide; ?> btn btn-app "><i class="fa fa-print"></i>Print SO</a>
-            <a href="<?php echo base_url('Order_ecatalog/index/'.$result['id']);?>" class="pull-right btn btn-app success <?php echo $add_hide;?>"><i class="fa fa-list"></i>New Item</a>
+            <a href="<?php echo base_url($this->router->fetch_class().'/print_sales_order/'.$result['id']);?>" target="_blank" class=" <?php echo $add_hide; ?> btn btn-app "><i class="fa fa-print"></i>Print SO</a>
+            <a href="<?php echo base_url($this->router->fetch_class().'/delete/'.$result['id']);?>" class=" <?php echo $add_hide; ?> btn btn-app "><i class="fa fa-trash"></i>Delete</a>
+            <a href="<?php echo base_url('Order_ecatalog/');?>" class="pull-right btn btn-app success <?php echo $add_hide;?>"><i class="fa fa-list"></i>New Order</a>
             <a href="<?php echo base_url('Sales_invoices/add_from_order/?soid='.$result['id']);?>" class="pull-right btn btn-app success <?php echo $add_hide;?>"><i class="fa fa-truck"></i>Create Invoice</a>
 
         </div>
@@ -183,7 +186,7 @@ endswitch;
                         <div class="row"> 
                             <hr>
                             <div class="">
-                                <div class="box-group" id="accordion">
+                                <div  <?php echo $del_hide;?> class="box-group" id="accordion">
                                     <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
 
                                     <div class="panel box box-primary">
@@ -194,7 +197,7 @@ endswitch;
                                           </a>
                                         </h4>
                                       </div>
-                                      <div id="collapseThree" class="panel-collapse collapse " aria-expanded="false">
+                                        <div id="collapseThree" class="panel-collapse collapse " aria-expanded="false">
                                         <div class="box-body">
                                             
                                             <div id='add_item_form' class="col-md-12 fl_scrollable_x bg-light-blue-gradient">
@@ -246,12 +249,13 @@ endswitch;
                                         <thead>
                                            <tr> 
                                                <th width="10%"  style="text-align: center;">Item Code</th> 
-                                               <th width="20%" style="text-align: center;">Item Name</th> 
-                                               <th width="20%" style="text-align: left;">Description</th> 
+                                               <th width="6%" style="text-align: center;">Image</th> 
+                                               <th width="16%" style="text-align: center;">Item Name</th> 
+                                               <th width="16%" style="text-align: left;">Description</th> 
                                                <th width="10%" style="text-align: center;">Quantity</th> 
-                                               <th width="15%" style="text-align: right;">Unit Cost</th>  
+                                               <th width="15%" style="text-align: right;">Unit Cost (<?php echo $result['currency_code'];?>)</th>  
                                                <th width="15%" style="text-align: right;">Total</th> 
-                                               <th width="5%" style="text-align: center;">Action</th>
+                                               <th  width="5%" style="text-align: center;">Action</th>
                                            </tr>
                                        </thead>
                                        <tbody  id="tbody_list">
@@ -260,16 +264,17 @@ endswitch;
                                                 $so_total= 0;
                                                 if(isset($so_order_items)){
                                                     foreach ($so_order_items as $so_item){
-//                                                        echo '<pre>';                                                    print_r($so_item); 
+//                                                        echo '<pre>';                                                    print_r($so_data); 
                                                         echo '
-                                                            <tr style="padding:10px" id="tr_3">
+                                                            <tr style="padding:10px" class="'.$row_count.'" id="tr_'.$row_count.'">
                                                                 <td><input hidden="" name="inv_items['.$row_count.'][item_code]" value="'.$so_item['item_code'].'">'.$so_item['item_code'].'</td>
-                                                                <td><input hidden="" name="inv_items['.$row_count.'][item_desc]" value="'.$so_item['item_desc'].'"><input hidden="" name="inv_items['.$row_count.'][item_id]" value="1">'.$so_item['item_desc'].'</td>
+                                                                <td  align="center"><img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$so_item['item_id'].'/'.$so_item['image']).'"></td>    
+                                                                <td><input hidden="" name="inv_items['.$row_count.'][item_desc]" value="'.$so_item['item_desc'].'"><input hidden="" name="inv_items['.$row_count.'][item_id]" value="'.$so_item['item_id'].'">'.$so_item['item_desc'].'</td>
                                                                 <td><input hidden="" name="inv_items['.$row_count.'][description]" value="'.$so_item['description'].'">'.$so_item['description'].'</td>
-                                                                <td align="right"><input hidden="" name="inv_items['.$row_count.'][item_quantity]" value="'.$so_item['units'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_2]" value="'.$so_item['secondary_unit'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id]" value="'.$so_item['unit_uom_id'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id_2]" value="'.$so_item['secondary_unit_uom_id'].'">'.$so_item['units'].' '.$so_item['unit_abbreviation'].' '.(($so_item['secondary_unit']>0)?'| '.$so_item['units'].' '.$so_item['unit_abbreviation_2']:'').'</td> 
-                                                                <td align="right"><input hidden="" name="inv_items['.$row_count.'][item_unit_cost]" value="'.$so_item['unit_price'].'">'. number_format($so_item['unit_price']).'</td>
-                                                                <td align="right"><input class="item_tots" hidden="" name="inv_items['.$row_count.'][item_total]" value="'.$so_item['sub_total'].'">'. number_format($so_item['sub_total'],2).'</td>
-                                                                <td width="5%"><button id="del_btn" type="button" class="del_btn_inv_row btn btn-danger"><i class="fa fa-trash"></i></button></td>
+                                                                <td  class="input_qty_td" align="right"><input class="input_qty_field" type="number" min="0" hidden="" name="inv_items['.$row_count.'][item_quantity]" value="'.$so_item['units'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_2]" value="'.$so_item['secondary_unit'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id]" value="'.$so_item['unit_uom_id'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id_2]" value="'.$so_item['secondary_unit_uom_id'].'"><span class="qty_text">'.$so_item['units'].'</span> '.$so_item['unit_abbreviation'].' '.(($so_item['secondary_unit']>0)?'| '.$so_item['units'].' '.$so_item['unit_abbreviation_2']:'').'</td> 
+                                                                <td class="input_price_td" align="right"><input hidden="" class="input_price_field" type="number" min="0" name="inv_items['.$row_count.'][item_unit_cost]" value="'.$so_item['unit_price'].'"><span class="price_text">'. number_format($so_item['unit_price'],2).'</span></td>
+                                                                <td class="item_tots_td" align="right"><input class="item_tots" hidden="" name="inv_items['.$row_count.'][item_total]" value="'.$so_item['sub_total'].'"><span>'. number_format($so_item['sub_total'],2).'</span></td>
+                                                                <td width="5%"><button id="del_btn" type="button" class="del_btn_inv_row btn btn-danger '.$del_hide.'"><i class="fa fa-trash"></i></button></td>
                                                             </tr>';
                                                         $so_total += $so_item['sub_total'];
                                                         $row_count++; 
@@ -279,16 +284,17 @@ endswitch;
                                        </tbody>
                                        
                                             <tr>
-                                                <td colspan="4"></td>
+                                                <td colspan="5"></td>
                                                 <td  style="text-align: right;"><b>Sub Total</b></td>
                                                 <td  style="text-align: right;"><input hidden value="<?php echo (isset($so_total)?$so_total:0);?>" name="invoice_total" id="invoice_total"><b><span id="inv_total"><?php echo number_format($so_total,2);?></span></b></td>
+                                                <td></td>
                                             </tr>
                                         <tbody id="og_tfoot">
                                             
                                         </tbody>
                                        <tfoot>  
                                             <tr>
-                                                <th colspan="4"></th>
+                                                <th colspan="5"></th>
                                                 <th  style="text-align: right;"><b>Total</b></th>
                                                 <th  style="text-align: right;"><input hidden  value="0" name="invoice_total_fin" id="invoice_total_fin"><span id="inv_total_fin"><b>0</b></span></th>
                                                 <th  style="text-align: right;"></th>
@@ -379,6 +385,25 @@ endswitch;
         </div>
 </div>
     
+<!--     //image Lightbox-->
+     <div tabindex="-1" class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+            <div class="modal-content"> 
+                  <div align="" class="modal-body">
+                      <div><center><img class="model_img"   src=""></center> </div>
+                  </div>
+                  <div class="modal-footer">
+                          <button class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+             </div>
+            </div>
+          </div>
+ <style>
+    .modal-dialog {width:800px;}
+    .thumbnail {margin-bottom:6px;}
+    .modal-body {width:800px; align:center;}
+    .model_img {width: 500px;}
+</style>
 <?php $this->load->view('sales_order_items/so_modals/add_new_customer_model'); ?>
 <?php $this->load->view('sales_order_items/so_modals/add_buy_gold_modal'); ?>
 <script>
@@ -401,6 +426,13 @@ $(document).keypress(function(e) {
     });
 $(document).ready(function(){
     load_temp_order();
+    input_ctrl();
+    $('.thumbnail').click(function(){ 
+            var title = $(this).parent('a').attr("src");
+            $(".model_img").attr("src",this.src); 
+            $('#myModal').modal({show:true});
+
+    }); 
 //    $("#add_old_gold").click(function(){ 
 //        var cust_id = $('#customer_id').val();
 //        window.open("<?php // echo base_url("Buy_gold/add_POS");?>/"+cust_id+"?type=so_og", "popupWindow", "width=1300, height=600, scrollbars=yes");
@@ -473,8 +505,9 @@ $(document).ready(function(){
                                 var item_total = qtyXprice;
                                 var item_desc_note = $('#description').val(); 
                                 
-                                var row_str = '<tr style="padding:10px" id="tr_'+res2.id+rowCount+'">'+ 
+                                var row_str = '<tr style="background:#ffc4c4;padding:10px"  id="tr_'+res2.id+rowCount+'">'+ 
                                                         '<td><input hidden name="inv_items['+res2.id+rowCount+'][item_code]" value="'+$('#item_code').val()+'">'+$('#item_code').val()+'</td>'+
+                                                        '<td align="center"><img class="thumbnail" style="width:30px;height:30px;" src="<?php echo base_url(ITEM_IMAGES.'/');?>'+res2.id+'/'+res2.image+'"></td>'+
                                                         '<td><input hidden name="inv_items['+res2.id+rowCount+'][item_desc]" value="'+res2.item_name+'"><input hidden name="inv_items['+res2.id+rowCount+'][item_id]" value="'+res2.id+'">'+res2.item_name+'</td>'+
                                                         '<td><input hidden name="inv_items['+res2.id+rowCount+'][description]" value="'+item_desc_note+'">'+item_desc_note+'</td>'+
                                                         '<td align="right"><input hidden name="inv_items['+res2.id+rowCount+'][item_quantity]" value="'+$('#item_quantity').val()+'"><input hidden name="inv_items['+res2.id+rowCount+'][item_quantity_2]" value="'+(($('#item_quantity_2').val()==null)?0:$('#item_quantity_2').val())+'">'+
@@ -489,7 +522,7 @@ $(document).ready(function(){
                                                     '</tr>';
                                 var newRow = $(row_str);
                                 $('#description').val('');
-                                jQuery('table#invoice_list_tbl ').append(newRow);
+                                jQuery('table#invoice_list_tbl ').prepend(newRow);
                                 calc_total();
 
                                 //delete row
@@ -838,9 +871,10 @@ $(document).ready(function(){
                                                
                                                  apnd_html = apnd_html + '<tr style="background:#ffc4c4;padding:10px" id="tr_'+itm_id+rowCount+'">'+ 
                                                                          '<td><input hidden name="inv_items['+itm_id+rowCount+'][item_code]" value="'+itm_obj.item_code+'">'+itm_obj.item_code+'</td>'+
+                                                                         '<td align="center"><img class="thumbnail" style="width:30px;height:30px;" src="<?php echo base_url(ITEM_IMAGES.'/');?>'+itm_id+'/'+itm_obj.image+'"></td>'+
                                                                          '<td><input hidden name="inv_items['+itm_id+rowCount+'][item_desc]" value="'+itm_obj.item_name+'"><input hidden name="inv_items['+itm_id+rowCount+'][item_id]" value="'+itm_id+'">'+itm_obj.item_name+'</td>'+
                                                                          '<td><input hidden name="inv_items['+itm_id+rowCount+'][description]" value="'+itm_obj.description+'">'+itm_obj.description+'</td>'+
-                                                                         '<td align="right"><input hidden name="inv_items['+itm_id+rowCount+'][item_quantity]" value="'+itm_obj.temp_info.units+'"><input hidden name="inv_items['+itm_id+rowCount+'][item_quantity_2]" value="'+((itm_obj.temp_info.units==null)?0:itm_obj.temp_info.units)+'">'+
+                                                                         '<td align="right"><input hidden name="inv_items['+itm_id+rowCount+'][item_quantity]" value="'+itm_obj.temp_info.units+'"><input hidden name="inv_items['+itm_id+rowCount+'][item_quantity_2]" value="0">'+
                                                                          '<input hidden name="inv_items['+itm_id+rowCount+'][item_quantity_uom_id]" value="'+itm_obj.item_uom_id+'"><input hidden name="inv_items['+itm_id+rowCount+'][item_quantity_uom_id_2]" value="'+itm_obj.item_uom_id_2+'">'+
                                                                                                                                                                                                                                                                                                  itm_obj.temp_info.units+' '+itm_obj.unit_abbreviation;
                                                  if(itm_obj.unit_abbreviation_2!=null && itm_obj.unit_abbreviation_2!=0){
@@ -853,6 +887,7 @@ $(document).ready(function(){
 //                                                             console.log(apnd_html);
                                             });
                                                 $('#invoice_list_tbl #tbody_list').append(apnd_html);
+                                                 
                                                 //delete row
                                                 $('.del_btn_inv_row').click(function(){
                                                     var del_itemid = (this.id).split('__')[0]; 
@@ -904,6 +939,41 @@ $(document).ready(function(){
             //Final_total
            $('#invoice_total_fin').val(grand_total);
            $('#inv_total_fin').text(grand_total.toFixed(2));
+    }
+    
+    function input_ctrl(){
+        $('.input_qty_td').click(function(){ 
+            var tr_id = $(this).closest('tr').attr('class');   
+    //        alert(tr_id)
+            $('[name="inv_items['+tr_id+'][item_quantity]"]').addClass("form-control");
+            $('[name="inv_items['+tr_id+'][item_quantity]"]').focus().select(); 
+        });
+        $('.input_qty_field').focusout(function(){   
+            var tr_id = $(this).closest('tr').attr('id');  
+            var newtot1 =  parseFloat($(this).val()) * parseFloat($('#'+tr_id+' .input_price_field').val());
+            $('#'+tr_id+' .input_qty_td .qty_text').text($(this).val());
+            $('#'+tr_id+' .item_tots_td span').text(newtot1.toFixed(2));
+            $('#'+tr_id+' .item_tots').val(newtot1);
+            $(this).removeClass('form-control');  
+            calc_total();
+            
+        });
+        
+        $('.input_price_td').click(function(){  
+            var tr_id = $(this).closest('tr').attr('class'); 
+            $('[name="inv_items['+tr_id+'][item_unit_cost]"]').addClass("form-control");
+            $('[name="inv_items['+tr_id+'][item_unit_cost]"]').show().focus().select();  
+        });
+        $('.input_price_field').focusout(function(){    
+            var tr_id = $(this).closest('tr').attr('id');
+            var newtot1 =  parseFloat($(this).val()) * parseFloat($('#'+tr_id+' .input_qty_field').val()); 
+            $('#'+tr_id+' .input_price_td .price_text').text(parseFloat($(this).val()).toFixed(2));
+            $('#'+tr_id+' .item_tots_td span').text(newtot1.toFixed(2));
+            $('#'+tr_id+' .item_tots').val(newtot1);
+            $(this).removeClass('form-control'); 
+            calc_total();
+//            alert(newtot1)
+        });
     }
 </script>
  

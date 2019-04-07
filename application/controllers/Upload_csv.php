@@ -25,7 +25,7 @@ class Upload_csv extends CI_Controller {
                                         
 	 
         function validate(){
-//            echo 'INITIAL SETUPS FOR CSV UPLOAD<br> 01. REQUIRED TO SET SUPPLIER ID <br>02. REQUIRED TO SET LOCATION ID';die;
+            echo 'INITIAL SETUPS FOR CSV UPLOAD<br> 01. REQUIRED TO SET SUPPLIER ID <br>02. REQUIRED TO SET LOCATION ID';die;
             $file = $_FILES["file"]["tmp_name"];
             $file_open = fopen($file, "r");
 
@@ -97,7 +97,7 @@ class Upload_csv extends CI_Controller {
                             if(!is_dir(ITEM_IMAGES.$item_id.'/other/')) mkdir(ITEM_IMAGES.$item_id.'/other/', 0777, TRUE);
 
 //                            $dir_path = "E:/xampp_zv/htdocs/nveloop_gems/storage/images/categories/".$cat_id;
-                            $dir_path = "E:/My Study/Project11/PROJECTS NVELOOP/NVELOOP/JWL_POS/CSV_UPLOAD/product_list/".$item_code;
+                            $dir_path = "F:/nl_images/".$item_code;
                             $file_in = $all_images = array();
                             if(is_dir($dir_path))
                                 $file_in = scandir($dir_path,1);

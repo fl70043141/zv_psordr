@@ -65,11 +65,11 @@ class Sales_order_items_model extends CI_Model
 	}               
          public function get_so_desc($id){ 
             $this->db->select('id.*, (id.unit_price*id.units*(100-id.discount_percent)*0.01) as sub_total');
-            $this->db->select('im.item_code');
+            $this->db->select('im.item_code,im.image');
             $this->db->select('(select ic.id from '.ITEM_CAT.' ic LEFT JOIN '.ITEMS.' itm ON itm.item_category_id = ic.id where itm.id = id.item_id) as item_category');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = id.unit_uom_id)  as unit_abbreviation');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = id.secondary_unit_uom_id)  as unit_abbreviation_2');
-            $this->db->join(ITEMS.' im','im.id = id.item_id'); 
+            $this->db->join(ITEMS.' im','im.id = id.item_id','left'); 
             $this->db->from(SALES_ORDER_DESC.' id'); 
             $this->db->where('id.sales_order_id',$id);
             $this->db->where('id.deleted',0);
@@ -214,6 +214,9 @@ class Sales_order_items_model extends CI_Model
                     }
                 }
                 
+                $this->db->where('reference',$this->session->userdata(SYSTEM_CODE)['ID'].'_so_0');
+                $this->db->delete(SALES_ORDER_ITEM_TEMP);    
+                
 		if(!empty($data['og_ref_tbl']))$this->db->insert_batch(OLD_GOLD_REF, $data['og_ref_tbl']); //OG Refs
                 
 		$status[0]=$this->db->trans_complete();
@@ -281,20 +284,32 @@ class Sales_order_items_model extends CI_Model
 		return $status;
 	}
         
+        
         public function delete_db($id,$data){ 
+//            echo '<pre>';            print_r($data); die;
 		$this->db->trans_start();
                 
 		$this->db->where('id', $id); 
                 $this->db->where('deleted',0);
-		$this->db->update(INVOICES, $data);
+		$this->db->update(SALES_ORDERS, $data['del_arr']);
 		
-                $this->db->where('invoice_id', $id); 
+                $this->db->where('sales_order_id', $id); 
                 $this->db->where('deleted',0);
-		$this->db->update(INVOICE_DESC, array('deleted'=>1));
+		$this->db->update(SALES_ORDER_DESC, array('deleted'=>1));
 		
+                if(!empty($data['item_stock_transection']))$this->db->insert_batch(ITEM_STOCK_TRANS, $data['item_stock_transection']);   
+                
+                if(!empty($data['item_stock'])){
+                    foreach ($data['item_stock'] as $stock){
+                        $this->db->where('location_id', $stock['location_id']);
+                        $this->db->where('item_id', $stock['item_id']);
+                        $this->db->update(ITEM_STOCK, array('units_on_demand'=>$stock['units_on_demand'],'units_available'=>$stock['new_units_available'],'units_available_2'=>$stock['new_units_available_2']));
+                    }
+                }
                 $status=$this->db->trans_complete();
 		return $status;
 	}
+        
         
         function delete_db2($id){
                 $this->db->trans_start();

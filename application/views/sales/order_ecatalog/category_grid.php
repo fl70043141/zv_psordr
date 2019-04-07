@@ -7,6 +7,10 @@ $(document).ready(function(){
 		event.preventDefault();
 		get_results();
     });  
+    $("#price_type_id").change(function(){ 
+		event.preventDefault();
+		get_results();
+    });  
 	
 	 
 });
@@ -66,32 +70,28 @@ function get_results(){
                         <?php echo form_open("", 'id="form_search" class="form-horizontal"')?>  
                        <?php echo form_hidden('order_id',$order_id)?>  
                         <div class="row"> 
-                            <div class="col-md-4">
-                                    <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'index'))?'<a href="'.base_url('Sales_order_items').'" class="btn btn-app "><i class="fa fa-backward"></i>Back</a>':''; ?>
+                            <div class="col-md-3">
+                                    <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'index'))?'<a href="'.base_url('Sales_order_items'.(($order_id!="")?'/edit/'.$order_id:'')).'" class="btn btn-app "><i class="fa fa-backward"></i>Back</a>':''; ?>
                                      <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'index'))?'<a href="'.base_url('Sales_order_items/add').'" class="btn btn-app "><i class="fa fa-check"></i>Finalize Order</a>':''; ?>
             
                             </div>
-                            <div class="col-md-4"> 
-                                    <div class="form-group">
-                                        <label class="col-md-5 control-label">Category Name:<span style="color: red">*</span></label>
-                                        <div class="col-md-7">                                            
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><span class="fa fa-search"></span></span>
-                                                <?php  echo form_dropdown('category_id',$category_list,set_value('item_category_id'),' class="form-control " data-live-search="true" id="item_category_id"');?>
-                                         
-                                            </div>                                          
-                                        </div>
+                            <div class="col-md-3">  
+                                    <div class="form-group pad  no-pad-top">
+                                        <label for="location_id">Category Name:</label>
+                                         <?php  echo form_dropdown('category_id',$category_list,set_value('category_id'),' class="form-control " data-live-search="true" id="category_id"');?>
                                     </div> 
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                        <label class="col-md-5 control-label">Item Code<span style="color: red"></span></label>
-                                        <div class="col-md-7">                                            
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><span class="fa fa-search"></span></span>
-                                                <?php  echo form_input('item_code',set_value('item_code'),' class="form-control add_item_inpt" id="item_code"');?>
-                                            </div>                                 
-                                        </div>
+                            </div>   
+                            <div class="col-md-3">  
+                                    <div class="form-group pad  no-pad-top">
+                                        <label for="item_code">Item Code</label>
+                                        <?php  echo form_input('item_code',set_value('item_code'),' class="form-control add_item_inpt" placeholder="Search by Code" id="item_code"');?>
+                                   </div> 
+                            </div> 
+                            
+                            <div class="col-md-3">  
+                                    <div class="form-group pad  no-pad-top">
+                                        <label for="price_type_id">Price:</label>
+                                         <?php  echo form_dropdown('price_type_id',$sales_type_list,set_value('price_type_id'),' class="form-control " data-live-search="true" id="price_type_id"');?>
                                     </div> 
                             </div> 
                         </div>

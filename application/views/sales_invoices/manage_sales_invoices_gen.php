@@ -74,7 +74,7 @@ $so_hide = (isset($so_data['id'])?'hidden':""); //hid in Order to Invoice
     
     
         <div class="">
-            <a href="<?php echo base_url('Sales_orders/view/'.((isset($so_data['id'])?$so_data['id']:"")));?>" class="btn btn-app  <?php echo (isset($so_data['id'])?"":"hide");?>"><i class="fa fa-backward"></i>Back to Order</a>
+            <a href="<?php echo base_url('Sales_order_items/edit/'.((isset($so_data['id'])?$so_data['id']:"")));?>" class="btn btn-app  <?php echo (isset($so_data['id'])?"":"hide");?>"><i class="fa fa-backward"></i>Back to Order</a>
             <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'index'))?'<a href="'.base_url($this->router->fetch_class()).'" class="btn btn-app '.(isset($so_data['id'])?"hide":"").'"><i class="fa fa-backward"></i>Back</a>':''; ?>
             <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'add'))?'<a href="'.base_url($this->router->fetch_class().'/add').'" class="'.$add_hide.' btn btn-app "><i class="fa fa-plus"></i>Create New</a>':''; ?> 
             <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'edit'))?'<a href="'.base_url($this->router->fetch_class().'/edit/'.$result['id']).'" class="'.$add_hide.' btn btn-app "><i class="fa fa-pencil"></i>Edit</a>':''; ?>

@@ -36,8 +36,7 @@
       <input hidden  type="text" name="item_category_id" id="item_category_id" value="<?php echo $item_cat_id;?>">
       <input hidden  type="text" name="curr_page_no" id="curr_page_no" value="<?php echo $item_list_page_no;?>">
       <input hidden  type="text" name="order_id" id="order_id" value="<?php echo $order_id;?>">
-      <input hidden  type="text" name="price_type_id" id="price_type_id" value="16">
-      <input hidden  type="text" name="price_type_id" id="price_type_id" value="16">
+      <input hidden  type="text" name="price_type_id" id="price_type_id" value="<?php echo $price_type_id;?>"> 
     <div id="item_info_contents" class="swiper-wrapper">
       
     </div>
@@ -165,7 +164,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                                                             content += (item_obj.origin_name != "")?'<text> Origin: '+item_obj.origin_name+' </text>':'';
                                                                         }
 
-                                                                            content +=  '<h3 class="price">Price: <span>'+((typeof(item_obj.item_price_info.currency_code) != 'undefined')?item_obj.item_price_info.currency_code:'')+' '+ ((typeof(item_obj.item_price_info.price_amount) != 'undefined')?item_obj.item_price_info.price_amount:'--')+'</span></h3>'+
+                                                                            content +=  '<h3 class="price">Price: <span>'+((typeof(item_obj.item_price_info.currency_code) != 'undefined')?item_obj.item_price_info.currency_code:'')+' '+ ((typeof(item_obj.item_price_info.price_amount) != 'undefined')?parseFloat(item_obj.item_price_info.price_amount).toFixed(2):'--')+'</span></h3>'+
                                                                                          '<input  id="'+item_obj.item_id+'_amountinpt" name="item_tmp['+item_obj.item_id+'][unit_price]" type="number" min="0" value="'+((typeof(item_obj.item_price_info.price_amount) != 'undefined')?item_obj.item_price_info.price_amount:'0')+'" class="form-group input-lg col-sm-8 col-xs-8 amount_inpt">'+
                                                                                          '<h4 class="price">Available: <span>'+item_obj.item_stock_info.tot_units_1+' '+item_obj.unit_abbreviation+((parseFloat(item_obj.item_stock_info.tot_units_2)>0)?'  |  '+item_obj.item_stock_info.tot_units_2+' '+item_obj.unit_abbreviation_2:'')+'</span></h4>'+
 

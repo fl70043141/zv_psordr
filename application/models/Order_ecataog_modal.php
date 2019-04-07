@@ -18,6 +18,7 @@ class Order_ecataog_modal extends CI_Model
             
             $this->db->where('ic.deleted',0);
             $this->db->group_by('ic.id');
+            $this->db->order_by('ic.order_by');
             $result = $this->db->get()->result_array();  
 //            echo $this->db->last_query();die;
             return $result;
