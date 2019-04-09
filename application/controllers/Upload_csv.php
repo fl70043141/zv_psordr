@@ -102,17 +102,20 @@ class Upload_csv extends CI_Controller {
                             if(is_dir($dir_path))
                                 $file_in = scandir($dir_path,1);
 
-                            $first_img = '';
+                            $rm1 = array_search('.', $file_in); unset($file_in[$rm1]);
+                            $rm2 = array_search('..', $file_in); unset($file_in[$rm2]);
+                            
+                            $first_img = '';$j=0;
                             foreach ($file_in as $key => $img){
         //                        echo $key; die;
-                                if($key==0 & $img!='.' & $img!='..'){
+                                if($j==0){//def image
                                     $first_img = $img; 
                                     copy($dir_path.'/'.$img, ITEM_IMAGES.$item_id.'/'.$img);
-                                }
-                                if($img!='1.jpg' & $img!='.' & $img!='..'){
+                                }else{
                                     copy($dir_path.'/'.$img, ITEM_IMAGES.$item_id.'/other/'.$img);
                                     $all_images[]=$img;
                                 }
+                                $j++;
                             }
         //                        echo '<pre>';        print_r($all_images); die;
 
