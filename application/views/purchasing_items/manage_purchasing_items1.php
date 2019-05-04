@@ -169,7 +169,7 @@ endswitch;
                                     <div class="row col-md-12 col-md-offset-1">
                                         <div id="first_col_form" class="col-md-2">
                                             <div class="form-group pad1">
-                                                <label for="item_category_id">Category</label>
+                                                <label for="item_category_id">Description</label>
                                                 <?php echo form_dropdown('item_category_id',$item_category_list,set_value('item_category_id'),' class="form-control add_item_inpt select2" style="width:100%;" data-live-search="true" id="item_category_id"');?>
                                             </div>
                                         </div> 
@@ -179,13 +179,19 @@ endswitch;
                                                 <?php echo form_input('item_code',set_value('item_code'),' class="form-control add_item_inpt " style="width:100%;" data-live-search="true" id="item_code"');?>
                                             </div>
                                         </div> 
-                                        <div  id="first_col_form" class="col-md-2">
+                                        <div hidden id="first_col_form" class="col-md-2">
                                             <div class="form-group pad1">
-                                                <label for="item_desc">Item Name</label>
+                                                <label for="item_desc">Description</label>
                                                 <?php echo form_input('item_desc',set_value('item_desc'),' class="form-control add_item_inpt " style="width:100%;" data-live-search="true" id="item_desc"');?>
                                             </div>
                                         </div> 
-                                         
+                                        
+                                        <div id="first_col_form" class="col-md-2">
+                                            <div class="form-group pad1">
+                                                <label for="treatments">NH/H &nbsp;&nbsp;&nbsp;<span id="treatment_add_new" style="font-size: 18px;"class="fa fa-plus-circle add_new_btn"></span></label>
+                                                <?php echo form_dropdown('treatments',$treatments_list,set_value('treatments'),' class="form-control add_item_inpt  " style="width:100%;" data-live-search="true" id="treatments"');?>
+                                            </div>
+                                        </div>
                                         <div id="uom_div">
                                             
                                         </div>
@@ -195,16 +201,38 @@ endswitch;
                                                 <input type="text" name="item_unit_cost" class="form-control add_item_inpt" id="item_unit_cost" placeholder="Unit Cost for item">
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-md-1">
-                                            <div class="form-group pad1"><br>
-                                                <a style="height: 40px; font-size: 20px;padding-top:5px; " id="add_item_btn" class="btn-default btn add_item_inpt pad1 center-block  "> <span class="fa  fa-plus-circle"></span> Add</a>
-                                            </div>
-                                        </div>
                                     </div>
                                     
                                     <div class="row col-md-12  col-md-offset-1"> 
-                                         
+                                        <div id="first_col_form" class="col-md-2">
+                                            <div class="form-group pad1">
+                                                <label for="shape">Shape &nbsp;&nbsp;&nbsp;<span id="shape_add_new" style="font-size: 18px;"class="fa fa-plus-circle add_new_btn"></span></label>
+                                                <?php echo form_dropdown('shape',$shape_list,set_value('shape'),' class="form-control add_item_inpt select2 " style="width:100%;" data-live-search="true" id="shape"');?>
+                                            </div>
+                                        </div>
+                                        <div id="first_col_form" class="col-md-2">
+                                            <div class="form-group pad1">
+                                                <label for="color">color &nbsp;&nbsp;&nbsp;<span id="color_add_new" style="font-size: 18px;"class="fa fa-plus-circle add_new_btn"></span></label>
+                                                <?php echo form_dropdown('color',$color_list,set_value('color'),' class="form-control add_item_inpt  select2" style="width:100%;" data-live-search="true" id="color"');?>
+                                            </div>
+                                        </div>
+                                        <div id="first_col_form" class="col-md-2">
+                                            <div class="form-group pad1">
+                                                <label for="origin">Origin &nbsp;&nbsp;&nbsp;<span id="origin_add_new" style="font-size: 18px;"class="fa fa-plus-circle add_new_btn"></span></label>
+                                                <?php echo form_dropdown('origin',$origin_list,set_value('origin'),' class="form-control add_item_inpt select2" style="width:100%;" data-live-search="true" id="origin"');?>
+                                            </div>
+                                        </div>
+                                        <div id="first_col_form" class="col-md-2">
+                                            <div class="form-group pad1">
+                                                <label for="certification">Cert. &nbsp;&nbsp;&nbsp;<span id="cert_add_new" style="font-size: 18px;"class="fa fa-plus-circle add_new_btn"></span></label>
+                                                <?php echo form_dropdown('certification',$certification_list,set_value('certification'),' class="form-control add_item_inpt select2 " style="width:100%;" data-live-search="true" id="certification"');?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group pad1 "><br>
+                                                <a style="height: 40px; font-size: 20px;padding-top:5px; " id="add_item_btn" class="btn-default btn add_item_inpt pad1 center-block  "> <span class="fa  fa-plus-circle"></span> Add</a>
+                                            </div>
+                                        </div>
                                     </div>
 <!--                                    <table id="example1" class="table bg-gray-light table-bordered table-striped">
                                         <thead>
@@ -273,13 +301,17 @@ endswitch;
                                     <table id="invoice_list_tbl" class="table table-bordered table-striped">
                                         <thead>
                                            <tr> 
-                                               <th width="5%"  style="text-align: left;">#</th> 
-                                               <th width="15%"  style="text-align: left;">Category</th> 
-                                               <th width="10%"  style="text-align: left;">Code</th> 
-                                               <th width="20%"  style="text-align: left;">Item Name</th> 
-                                               <th width="15%" style="text-align: center;">Units</th>   
-                                               <th width="15%" style="text-align: right;">Rate</th> 
-                                               <th width="15%" style="text-align: right;">Total</th> 
+                                               <th width="3%"  style="text-align: left;">#</th> 
+                                               <th width="10%"  style="text-align: left;">Stone</th> 
+                                               <th width="7%"  style="text-align: left;">Code</th> 
+                                               <th width="6%" style="text-align: center;">N/H</th> 
+                                               <th width="9%" style="text-align: center;">Shape</th> 
+                                               <th width="9%" style="text-align: center;">Color</th> 
+                                               <th width="10%" style="text-align: center;">Cert</th> 
+                                               <th width="8%" style="text-align: center;">Origin</th> 
+                                               <th width="12%" style="text-align: center;">Carat Weight</th>   
+                                               <th width="8%" style="text-align: right;">Rate</th> 
+                                               <th width="10%" style="text-align: right;">Total</th> 
                                                <th width="5%" style="text-align: center;">Action</th>
                                            </tr>
                                        </thead>
@@ -295,7 +327,7 @@ endswitch;
                                             </tr>-->
                                             
                                             <tr>
-                                                <th colspan="5"></th>
+                                                <th colspan="9"></th>
                                                 <th  style="text-align: right;">Total</th>
                                                 <th  style="text-align: right;"><input hidden value="0" name="invoice_total" id="invoice_total"><span id="inv_total">0</span></th>
                                             </tr> 
@@ -432,7 +464,7 @@ $(document).ready(function(){
                                     }
                                 }
                                 if(item_total<=0){
-                                    fl_alert('info','Item Unit or cost not valid! Please Recheck before add.');
+                                    fl_alert('info','Item Weight or cost not valid! Please Recheck before add.');
                                     return false;
                                 }
                                 
@@ -441,7 +473,11 @@ $(document).ready(function(){
                                                         '<td><span id="'+rowCount+'_row_cntr" class="row_counter_cls"></span></td>'+
                                                         '<td><input hidden name="inv_items['+rowCount+'][item_desc]" value="'+res2.item_name+'"><input hidden name="inv_items['+rowCount+'][cat_id]" value="'+res2.id+'">'+res2.item_name+'</td>'+
                                                         '<td><input hidden name="inv_items['+rowCount+'][item_code]" class="item_code_row" value="'+$('#item_code').val()+'">'+$('#item_code').val()+'</td>'+
-                                                        '<td><input hidden name="inv_items['+rowCount+'][item_desc]" value="'+res2.item_name+'"><input hidden name="inv_items['+rowCount+'][cat_id]" value="'+res2.id+'">'+res2.item_name+'</td>'+
+                                                        '<td align="center"><input hidden name="inv_items['+rowCount+'][item_treatments]" value="'+$('#treatments').val()+'">'+$("#treatments option:selected" ).text()+'</td>'+
+                                                        '<td align="center"><input hidden name="inv_items['+rowCount+'][shape]" value="'+$('#shape').val()+'">'+$("#shape option:selected" ).text()+'</td>'+
+                                                        '<td align="center"><input hidden name="inv_items['+rowCount+'][color]" value="'+$('#color').val()+'">'+$("#color option:selected" ).text()+'</td>'+
+                                                        '<td align="center"><input hidden name="inv_items['+rowCount+'][certification]" value="'+$('#certification').val()+'">'+$("#certification option:selected" ).text()+'</td>'+
+                                                        '<td align="center"><input hidden name="inv_items['+rowCount+'][origin]" value="'+$('#origin').val()+'">'+$("#origin option:selected" ).text()+'</td>'+
                                                         '<td align="center"><input hidden name="inv_items['+rowCount+'][item_quantity]" value="'+$('#item_quantity').val()+'"><input hidden name="inv_items['+rowCount+'][item_quantity_2]" value="'+(($('#item_quantity_2').val()==null)?0:$('#item_quantity_2').val())+'">'+
                                                         '<input hidden name="inv_items['+rowCount+'][item_quantity_uom_id]" value="'+res2.item_uom_id+'"><input hidden name="inv_items['+rowCount+'][item_quantity_uom_id_2]" value="'+res2.item_uom_id_2+'">'+
                                                                                                                                                                                                                                                                                 $('#item_quantity').val()+' '+res2.unit_abbreviation;
@@ -527,12 +563,12 @@ $(document).ready(function(){
                                 if(id1!='item_desc'){$('#item_desc').val(res1.item_code).trigger('change');}
                                 if(id1!='item_code'){ $('#item_code').val(res1.item_code);}
                                 (res1.price_amount==null)? $('#item_unit_cost').val(0):$('#item_unit_cost').val(res1.price_amount);
-                                $('#unit_abbr').text('Units '+res1.unit_abbreviation);
+                                $('#unit_abbr').text('Weight '+res1.unit_abbreviation);
                                 $('#prce_unit_name').text(res1.unit_abbreviation);
                                 $('#unit_abbr_2').text(res1.unit_abbreviation_2);
 //                                $('#item_discount').val(0);
                                 $('#item_quantity').val(1);
-//                                $('#item_desc').val(res1.category_name);
+                                $('#item_desc').val(res1.category_name);
 
                                 $("#result_search").html(result);
                             }

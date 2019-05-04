@@ -16,7 +16,7 @@ class Purchasing_items extends CI_Controller {
         function view_search($datas=''){
 //            $this->add();
             $data['search_list'] = $this->Purchasing_items_model->search_result();
-            $data['main_content']='purchasing_invoices/search_purchasing_invoices'; 
+            $data['main_content']='purchasing_items/search_purchasing_items'; 
             $data['supplier_list'] = get_dropdown_data(SUPPLIERS,'supplier_name','id','Suppliers');
             $this->load->view('includes/template',$data);
 	}
@@ -96,6 +96,17 @@ class Purchasing_items extends CI_Controller {
             $this->form_validation->set_rules('invoice_date','Invoice Date','required');
             $this->form_validation->set_rules('reference','Reference','required'); 
       }	
+      function check_unique_item_code($item_code=''){
+          $inputs = $this->input->post();
+          if(isset($inputs['itemcode']))
+              $item_code = $inputs['itemcode'];
+          
+          $res = get_single_row_helper(ITEMS, "item_code = '".$item_code."'");
+          if(empty($res))
+              echo '1';
+          else
+              echo '0';
+      }
       function check_unique_vehicle(){
           $res = array();
           if($this->input->post('id')!=''){
@@ -113,13 +124,13 @@ class Purchasing_items extends CI_Controller {
         function new_items_insertion($item){
             
             $cur_det = $this->Purchasing_items_model->get_currency_for_code($this->input->post('currency_code'));
+            
 //                    echo '<pre>';            print_r($this->input->post()); die;
-//                    echo '<pre>';            print_r($cur_det); die;
-                    
+//                    echo '<pre>';            print_r($item); die;
             if(!empty($item)){ 
                     
                     $item_id = get_autoincrement_no(ITEMS); 
-                    $item_code = ($item['item_code']=='')?gen_id('1', ITEMS, 'id',4):$item['item_code'];
+                    $item_code = (isset($item['item_code']) && $item['item_code']!="")?$item['item_code']:gen_id('A', ITEMS, 'id',3);
                     $inputs['status'] = (isset($inputs['status']))?1:0;
                     $inputs['sales_excluded'] = (isset($inputs['sales_excluded']))?1:0;
                     $inputs['purchases_excluded'] = (isset($inputs['purchases_excluded']))?1:0;
@@ -127,7 +138,6 @@ class Purchasing_items extends CI_Controller {
                                                     'id' => $item_id,
                                                     'item_code' => $item_code,
                                                     'item_name' => $item['item_desc'],
-                                                    'description' => $item['description'],
                                                     'item_uom_id' => $item['item_quantity_uom_id'],
                                                     'item_uom_id_2' => $item['item_quantity_uom_id_2'],
                                                     'item_category_id' => $item['cat_id'],
@@ -139,6 +149,19 @@ class Purchasing_items extends CI_Controller {
                                                     'added_on' => date('Y-m-d'),
                                                     'added_by' => $this->session->userdata(SYSTEM_CODE)['ID'],
                                                 ); 
+                    if($item['certification']!=''){
+//                        $data['item']['cert_location_person_type'] = 50;
+//                        $data['item']['cert_location_ref'] = $this->input->post('location_id');
+                        
+                        $data['cert_trans'] = array(
+                                                    'item_id' => $item_id,
+                                                    'person_type' => 50, //50 for company location
+                                                    'trans_ref' => $this->input->post('location_id'), //50 for company location
+                                                    'trans_date' => strtotime(date('Y-m-d')), //50 for company location
+                                                    'status' => 1, //50 for company location
+                                                    'deleted' => 0, //50 for company location
+                                                    );
+                    }
                     $data['purchase_price'] =   array(
                                                     'item_id' => $item_id,
                                                     'item_price_type' => 1, //2 purchasing price
@@ -151,7 +174,6 @@ class Purchasing_items extends CI_Controller {
                                                     'note' =>'',//Genrated on Purchasing Invoice
                                                     'status' =>1,
                                                 ); 
-                    
                     $data['standard_price'] = array(
                                                     'item_id' => $item_id,
                                                     'item_price_type' => 3, //3 Standard price
@@ -161,18 +183,17 @@ class Purchasing_items extends CI_Controller {
                                                     'status' =>1,
                                                     );
                     
-//                    echo '<pre>';            print_r($data); die;
+//                echo '<pre>';                                                    print_r($data); die;
                     $ins_res = $this->Purchasing_items_model->add_new_invoice_item($data);
             }
             
             return $ins_res;
         }
-	function create(){  
+	function create(){   
             $inputs = $this->input->post();
             $invoice_id = get_autoincrement_no(SUPPLIER_INVOICE);
             $invoice_no = gen_id(SUP_INVOICE_NO_PREFIX, SUPPLIER_INVOICE, 'id');
             
-//            echo '<pre>';            print_r($this->input->post()); die; 
             $cur_det = $this->Purchasing_items_model->get_currency_for_code($inputs['currency_code']);
             if(isset($inputs['status'])){
                 $inputs['status'] = 1;
@@ -197,7 +218,8 @@ class Purchasing_items extends CI_Controller {
                                 );
             $data['inv_desc'] = array(); 
             $data['item_stock_transection'] = array(); //stock transection purchasing
-            
+            ksort($inputs['inv_items']);
+//            echo '<pre>';            print_r($inputs); die; 
             $total = 0;
             foreach ($inputs['inv_items'] as $inv_item){
                 $total += $inv_item['item_quantity']*$inv_item['item_unit_cost'];
@@ -255,7 +277,7 @@ class Purchasing_items extends CI_Controller {
                                                 'person_type' =>20, //10 for Supplier 
                                                 'person_id' =>$inputs['supplier_id'],
                                                 'transection_amount' =>$total,
-                                                'currency_code' => $inputs['currency_code'], 
+                                                'currency_code' => $cur_det['code'], 
                                                 'currency_value' => $cur_det['value'], 
                                                 'trans_date' => strtotime($inputs['invoice_date']),
                                                 'trans_memo' => 'Supplier Cash Invoice',
@@ -284,7 +306,7 @@ class Purchasing_items extends CI_Controller {
                                                 'account_code' => 1510, //5 inventory GL
                                                 'memo' => '',
                                                 'amount' => +($total),
-                                                'currency_code' => $inputs['currency_code'], 
+                                                'currency_code' => $cur_det['code'], 
                                                 'currency_value' => $cur_det['value'], 
                                                 'fiscal_year'=> $this->session->userdata(SYSTEM_CODE)['active_fiscal_year_id'],
                                                 'status' => 1,
@@ -297,12 +319,13 @@ class Purchasing_items extends CI_Controller {
                                                 'account_code' => 2100, //inventory GL
                                                 'memo' => '',
                                                 'amount' => (-$total),
-                                                'currency_code' => $inputs['currency_code'], 
+                                                'currency_code' => $cur_det['code'], 
                                                 'currency_value' => $cur_det['value'], 
                                                 'fiscal_year'=> $this->session->userdata(SYSTEM_CODE)['active_fiscal_year_id'],
                                                 'status' => 1,
                                         )
                                     );
+            
             if($inputs['payment_term_id']==1){
                 $data['gl_trans'][] = array(
                                                 'person_type' => 20,
@@ -313,7 +336,7 @@ class Purchasing_items extends CI_Controller {
                                                 'account_code' => 2100, 
                                                 'memo' => '',
                                                 'amount' => ($total),
-                                                'currency_code' => $inputs['currency_code'], 
+                                                'currency_code' => $cur_det['code'], 
                                                 'currency_value' => $cur_det['value'], 
                                                 'fiscal_year'=> $this->session->userdata(SYSTEM_CODE)['active_fiscal_year_id'],
                                                 'status' => 1,
@@ -327,7 +350,7 @@ class Purchasing_items extends CI_Controller {
                                                 'account_code' => 1060,
                                                 'memo' => '',
                                                 'amount' => (-$total),
-                                                'currency_code' => $inputs['currency_code'], 
+                                                'currency_code' => $cur_det['code'], 
                                                 'currency_value' => $cur_det['value'], 
                                                 'fiscal_year'=> $this->session->userdata(SYSTEM_CODE)['active_fiscal_year_id'],
                                                 'status' => 1,
@@ -385,7 +408,6 @@ class Purchasing_items extends CI_Controller {
             return $update_arr;
         }
         
-        
 	function update(){ 
             $inputs = $this->input->post();
             $agent_id = $inputs['id']; 
@@ -427,7 +449,6 @@ class Purchasing_items extends CI_Controller {
             } 
 	}	
         
-        
         function remove(){
             $inputs = $this->input->post(); 
             $this->load->model('Item_stock_model');
@@ -459,8 +480,7 @@ class Purchasing_items extends CI_Controller {
                 if(!empty($item_stock_data)){
                     $data['item_stock'][] = $item_stock_data;
                 }
-            }
-//            $existing_data = $this->Purchasing_invoices_model->get_single_row($inputs['id']);   
+            }  
             $existing_data = $this->get_invoice_info($inputs['id']); 
             $cur_det = get_currency_for_code($existing_data['invoice_dets']['currency_code']);
              //GL Entries
@@ -506,6 +526,7 @@ class Purchasing_items extends CI_Controller {
             }  
 	}
 	
+	
 	function remove2(){
             $id  = $this->input->post('id'); 
             
@@ -541,6 +562,7 @@ class Purchasing_items extends CI_Controller {
             $data['item_list'] = get_dropdown_data(ITEMS,array('item_name',"CONCAT(item_name,'-',item_code) as item_name"),'item_code','','item_type_id = 1'); 
             $data['item_category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id',''); 
             $data['currency_list'] = get_dropdown_data(CURRENCY,'code','code','Currency');
+            
 
             return $data;
 	}	
@@ -550,12 +572,13 @@ class Purchasing_items extends CI_Controller {
             $search_data=array( 
                                 'supp_invoice_no' => $this->input->post('supp_invoice_no'),
                                 'supplier_id' => $input['supplier_id'],  
+                                'item_code' => $input['item_code'],  
 //                                    'category' => $this->input->post('category'), 
                                 ); 
             $invoices['search_list'] = $this->Purchasing_items_model->search_result($search_data);
             
 //		$data_view['search_list'] = $this->Purchasing_items_model->search_result();
-            $this->load->view('purchasing_items/search_purchasing_invoices_result',$invoices);
+            $this->load->view('purchasing_items/search_purchasing_items_result',$invoices);
 	}
         
         function get_single_item(){
@@ -570,24 +593,28 @@ class Purchasing_items extends CI_Controller {
             $data = $this->Purchasing_items_model->get_single_item(1002,15);
             echo '<pre>' ; print_r($data);die;
 //            log_message('error', 'Some variable did not contain a value.');
-        }
-        function sales_invoice_print($inv_id){
-//            echo '<pre>';            print_r($this->get_invoice_info(2)); die;
+        } 
+        
+        function supplier_invoice_print($inv_id){ 
             $inv_data = $this->get_invoice_info($inv_id);
             $inv_dets = $inv_data['invoice_dets'];
             $inv_desc = $inv_data['invoice_desc'];
             $inv_trans = $inv_data['inv_transection'];
-            $this->load->library('Pdf');
-            
+            $this->load->library('Pdf'); 
+            $this->load->model('Items_model');
+//                        echo '<pre>';            print_r($inv_dets); die;
             // create new PDF document
             $pdf = new Pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->fl_header='header_am';//invice bg
+            $pdf->fl_header='header_jewel';//invice bg
+            $pdf->fl_header_title='INVOICE';//invice bg
+            $pdf->fl_header_title_RTOP='PURCHASING';//invice bg
+            $pdf->fl_footer_text=0;//invice bg
             
             // set document information
             $pdf->SetCreator(PDF_CREATOR);
             $pdf->SetAuthor('Fahry Lafir');
-            $pdf->SetTitle('PDF AM Invoice');
-            $pdf->SetSubject('AM Invoice');
+            $pdf->SetTitle('PDF JWL Invoice');
+            $pdf->SetSubject('JWL Invoice');
             $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
             
             // set default header data
@@ -611,8 +638,9 @@ class Purchasing_items extends CI_Controller {
             // set image scale factor
             $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
                     
-            // set font
-            $pdf->SetFont('times', '', 11);
+            // set font 
+            $fontname = TCPDF_FONTS::addTTFfont('storage/fonts/Lato-Regular.ttf', 'TrueTypeUnicode', '', 96);
+            $pdf->SetFont($fontname, 'I', 9);
         
         
             $pdf->AddPage();   
@@ -627,56 +655,130 @@ class Purchasing_items extends CI_Controller {
                             <td align="right">Invoiced by: '.$inv_dets['sales_person'].'</td>
                         </tr>
                         <tr> 
-                            <td colspan="2" align="center"><h1>INVOICE</h1></td>
+                            <td colspan="2" align="center"><h2>PURCHASING INVOICE</h2></td>
                         </tr> 
                         <tr>
-                            <td>Insurance Company: '.((isset($inv_dets['insurance_company']) && $inv_dets['insurance_company']!='')?$inv_dets['insurance_company']:'-').'</td>
-                            <td align="right">Vehicle No: '.((isset($inv_dets['vehicle_number']) && $inv_dets['vehicle_number']!='')?$inv_dets['vehicle_number']:'-').'</td>
+                            <td><b>Bill To:</b> </td>
+                            <td align="right"></td>
                         </tr>
                         <tr>
-                            <td>Customer: '.$inv_dets['customer_name'].'</td>
-                            <td align="right">Make/Model: '.((isset($inv_dets['vehicle_model']) && $inv_dets['vehicle_model']!='')?$inv_dets['vehicle_model']:'-').'</td>
+                            <td>'.$inv_dets['supplier_name'].'</td>
+                            <td align="right"></td>
                         </tr>
                         <tr>
-                            <td>Customer Contact Number: '.$inv_dets['phone'].'</td>
-                            <td align="right">Chasis No: '.((isset($inv_dets['chasis_no']) && $inv_dets['chasis_no']!='')?$inv_dets['chasis_no']:'-').'</td>
+                            <td style="padding:10px;">Address: '.$inv_dets['address'].' '.$inv_dets['city'].' '.(($inv_dets['phone']!='')?'<br>Phone: '.$inv_dets['phone']:'').'</td> 
                         </tr>
                         <tr><td  colspan="5"><br></td></tr>
                     </table> 
                 ';
+            $html = '<text>Supplier Details:</text><br>';
+            $html .= '<table style="padding:2;" border="0.4"> 
+                        <tr><td>
+                            <table style="padding:0 50 2 0;">
+                            <tr>
+                                <td style="padding:10px;">Supplier Code: '.$inv_dets['supplier_name'].'</td> 
+                            </tr>   
+                            <tr>
+                                <td style="padding:10px;">Full Name: '.$inv_dets['supplier_name'].'</td> 
+                            </tr>   
+                            <tr>
+                                <td style="padding:10px;">Address: '.$inv_dets['address'].' '.$inv_dets['city'].' <br>'.$inv_dets['phone'].'</td> 
+                            </tr>   
+                        </table> 
+                    </td></tr>
+                    </table> ';
+            
+            $html .= '<table border="0">
+                            <tr><td  colspan="3"><br></td></tr>
+                            <tr>
+                                <td align="left">Invoice  No: '.$inv_dets['supplier_invoice_no'].'</td> 
+                                <td align="center">Invoice Date '.date(SYS_DATE_FORMAT,$inv_dets['invoice_date']).'</td> 
+                                <td align="right">Currency: '.$inv_data['invoice_dets']['currency_code'].'</td> 
+                            </tr>   
+                            <tr><td  colspan="3"><br></td></tr>
+                        </table>  ';
            
-//            echo '<pre>';            print_r($inv_data); die;
-            foreach ($inv_desc as $inv_itms){ 
-                     $html .= '<table id="example1" class="table-line" border="0">
-                                <thead>
-                                    <tr class="colored_bg" style="background-color:#E0E0E0;">
-                                         <th colspan="5">'.$inv_data['item_cats'][$inv_itms[0]['item_category']].'</th> 
-                                     </tr>
-                                    <tr style="">
-                                         <th  width="10%"><u><b>Qty</b></u></th> 
-                                         <th width="40%" style="text-align: left;"><u><b>Description</b></u></th>  
-                                         <th width="15%" style="text-align: right;"><u><b>Rate</b></u></th> 
-                                         <th width="15%" style="text-align: right;"><u><b>Discount</b></u></th> 
-                                         <th width="19%" style="text-align: right;"><u><b>Total</b></u></th> 
-                                     </tr>
-                                </thead>
-                            <tbody>';
-                     
-                     foreach ($inv_itms as $inv_itm){
-                         $html .= '<tr>
-                                        <td width="10%">'.$inv_itm['quantity'].'</td> 
-                                        <td width="40%" style="text-align: left;">'.$inv_itm['item_description'].'</td>  
-                                        <td width="15%" style="text-align: right;">'. number_format($inv_itm['unit_price'],2).'</td> 
-                                        <td width="15%" style="text-align: right;">'. number_format($inv_itm['discount_persent'],2).'</td> 
-                                        <td width="19%" style="text-align: right;">'. number_format($inv_itm['sub_total'],2).'</td> 
-                                    </tr> ';
-                     }
-                     $html .= '
-                                <tr><td  colspan="5"></td></tr></tbody></table>'; 
-            }
+            $cur_det = get_currency_for_code($inv_data['invoice_dets']['currency_code']);
+//            echo '<pre>';            print_r($inv_desc); die;
+            
+                        $inv_tot = 0;
+                        $is_gem_stat = $is_item_stat = 0;
+                        $item_list_html = $gem_list_html = '';
+//            echo '<pre>';            print_r($inv_data['invoice_desc_list']); die; 
+                   foreach ($inv_data['invoice_desc_list'] as $inv_itm){
+                       if($inv_itm['is_gem']==1){
+                           $is_gem_stat++;
+                       }
+                       if($inv_itm['is_gem']==0){
+                           $is_item_stat++;
+                       }
+                       if($inv_itm['is_gem']==0){
+                           $item_list_html .= '<tr>
+                                          <td width="33%" style="text-align: left;">'.$inv_itm['supplier_item_desc'].'</td> 
+                                          <td width="12%" style="text-align: left;">'.$inv_itm['item_cat_name'].'</td>  
+                                          <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                          <td width="23%" style="text-align: center;">'.$inv_itm['purchasing_unit'].' '.$inv_itm['unit_abbreviation'].'</td> 
+                                          <td width="20%" style="text-align: right;"> '. number_format($inv_itm['sub_total'],2).'</td> 
+                                      </tr> ';
+                           $inv_tot+=$inv_itm['sub_total'];
+                       }
+                       if($inv_itm['is_gem']==1){
+                           $item_info = get_single_row_helper(ITEMS, 'id='.$inv_itm['item_id']);
+
+//                                echo '<pre>';         print_r($inv_itm); die;
+                           $gem_list_html .= '<tr>
+                                              <td width="16%" style="text-align: left;">'.$inv_itm['supplier_item_desc'].'</td> 
+                                              <td width="10%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                              <td width="10%" style="text-align: left;">'. (($item_info['treatment']>0)?get_dropdown_value($item_info['treatment']):'-').'</td>  
+                                              <td width="10%" style="text-align: left;">'. (($item_info['shape']>0)?get_dropdown_value($item_info['shape']):'-').'</td>  
+                                              <td width="12%" style="text-align: left;">'. (($item_info['color']>0)?get_dropdown_value($item_info['color']):'-').'</td>  
+                                              <td width="12%" style="text-align: left;">'. (($item_info['origin']>0)?get_dropdown_value($item_info['origin']):'-').'</td>  
+                                              <td width="18%" style="text-align: center;">'.$inv_itm['purchasing_unit'].' '.$inv_itm['unit_abbreviation'].(($inv_itm['secondary_unit_uom_id']>0)?' / '.$inv_itm['secondary_unit'].' '.$inv_itm['unit_abbreviation_2']:'').'</td> 
+                                              <td width="12%" style="text-align: right;"> '. number_format($inv_itm['sub_total'],2).'</td> 
+                                          </tr> ';
+                           $inv_tot+=$inv_itm['sub_total'];
+                       }
+                   }
+
+                   //items
+                   if($is_item_stat>0){
+                       $html .='
+                                   <table id="example1" class="table-line" border="0">
+                                       <thead> 
+                                           <tr style=""> 
+                                               <th width="33%" style="text-align: left;"><u><b>Article Description</b></u></th>  
+                                               <th width="12%" style="text-align: left;"><u><b>Category</b></u></th>  
+                                               <th width="12%" style="text-align: left;"><u><b>Item code</b></u></th> 
+                                               <th  width="23%" style="text-align: center;" ><u><b>Weight</b></u></th>  
+                                               <th width="20%" style="text-align: right;"><u><b>Price ('.$cur_det['symbol_left'].')</b></u></th> 
+                                            </tr>
+                                       </thead>
+                                   <tbody>';
+                       $html .= $item_list_html;
+                       $html .= ' <tr><td  colspan="5"></td></tr></tbody></table>';  
+                   }
+                   //gemstones
+                   if($is_gem_stat>0){
+                       $html .= '<table id="example2" class="table-line" border="0">
+                                       <thead> 
+                                           <tr style=""> 
+                                               <th width="16%" style="text-align: left;"><u><b>Gemstone</b></u></th>  
+                                               <th width="10%" style="text-align: left;"><u><b>Item Code</b></u></th>  
+                                               <th width="10%" style="text-align: left;"><u><b>CDC</b></u></th> 
+                                               <th  width="10%" style="text-align: left;" ><u><b>Shape</b></u></th>  
+                                               <th  width="12%" style="text-align: left;" ><u><b>Color</b></u></th>  
+                                               <th  width="12%" style="text-align: left;" ><u><b>Origin</b></u></th>  
+                                               <th  width="18%" style="text-align: center;" ><u><b>Weight</b></u></th>  
+                                               <th width="12%" style="text-align: right;"><u><b>Price ('.$cur_det['symbol_left'].')</b></u></th> 
+                                            </tr>
+                                       </thead>
+                                   <tbody>';
+                       $html .= $gem_list_html;
+                       $html .= ' <tr><td  colspan="5"></td></tr></tbody></table>';  
+                   } 
             $html .= '
                     
-                    <table id="example1" class="table-line" border="0">
+                    <table id="example2" class="table-line" border="0">
                         
                        <tbody>
 
@@ -684,17 +786,27 @@ class Purchasing_items extends CI_Controller {
                                     <td style="text-align: right;" colspan="4"><b> Total</b></td> 
                                     <td  width="19%"  style="text-align: right;"><b>'. number_format($inv_data['invoice_desc_total'],2).'</b></td> 
                                 </tr>'; 
+                        $transection_tot =0;
+                        $balance_amount =  0;
                         foreach ($inv_trans as $inv_tran){
+                            if($inv_tran['calculation']==1)$transection_tot +=  $inv_tran['transection_amount'];
+                            if($inv_tran['calculation']==2)$transection_tot -=  $inv_tran['transection_amount'];
+//            echo '<pre>';            print_r($inv_tran); die;
                             $html .= '<tr>
-                                            <td  style="text-align: right;" colspan="4">'.$inv_tran['name'].'</td> 
+                                            <td  style="text-align: right;" colspan="4">'.$inv_tran['trans_type_name'].' ('.date(SYS_DATE_FORMAT,$inv_tran['trans_date']).')</td> 
                                             <td  width="19%"  style="text-align: right;">'. number_format($inv_tran['transection_amount'],2).'</td> 
-                                        </tr> ';
+                                        </tr> '
+                                    ;
+                            $balance_amount += $transection_tot;
 
                         }
+                        $balance_amount += $inv_data['invoice_desc_total']; 
                         $html .= '<tr>
                                     <td  style="text-align: right;" colspan="4"><b>Balance</b></td> 
-                                    <td width="19%"  style="text-align: right;"><b>'. number_format($inv_data['invoice_total'],2).'</b></td> 
-                                </tr> 
+                                    <td  width="19%"  style="text-align: right;"><b>'. number_format($balance_amount,2).'</b></td> 
+                                </tr> ';
+                        
+                        $html .= '
                         </tbody>
                     </table>
                                                                
@@ -708,12 +820,13 @@ class Purchasing_items extends CI_Controller {
                 padding-bottom: 2px;
                 border-bottom: 1px solid #ddd;
                 text-align:center; 
+                font-size:10px;
             }
             .text-right,.table-line.text-right{
                 text-align:right;
             }
             .table-line tr{
-                line-height: 30px;
+                line-height: 20px;
             }
             </style>
                     ';
@@ -721,13 +834,13 @@ class Purchasing_items extends CI_Controller {
             
             $pdf->SetFont('times', '', 12.5, '', false);
             $pdf->SetTextColor(255,125,125);           
-            $pdf->Text(160,20,$inv_dets['invoice_no']);
+//            $pdf->Text(160,20,$inv_dets['supplier_invoice_no']);
             // force print dialog
-            $js = 'this.print();';
-//            $js = 'print(true);';
+//            $js = 'this.print();';
+            $js = 'print(true);';
             // set javascript
             $pdf->IncludeJS($js);
-            $pdf->Output('example_003.pdf', 'I');
+            $pdf->Output('Purch_invoice_'.$inv_id.'.pdf', 'I');
                 
         }
         
@@ -746,7 +859,7 @@ class Purchasing_items extends CI_Controller {
             $data['invoice_desc_list'] = $invoice_desc;
             
             $data['item_cats'] = get_dropdown_data(ITEM_CAT, 'category_name','id');
-            $item_cats = get_dropdown_data(ITEM_CAT, 'category_name','id');
+            $item_cats = get_dropdown_data(ITEM_CAT, 'category_name','id','','',0,'','order_by');
             
             $data['invoice_desc_total']= 0;
             foreach ($item_cats as $cat_key=>$cay_name){ 
@@ -799,7 +912,8 @@ class Purchasing_items extends CI_Controller {
         function get_single_category(){
             $inputs = $this->input ->post();
 //            echo '<pre>';            print_r($inputs); die;
-            $data = $this->Purchasing_items_model->get_single_category($inputs['item_category_id']); 
+            $item_code = ((isset($inputs['item_code']))?$inputs['item_code']:'');
+            $data = $this->Purchasing_items_model->get_single_category($inputs['item_category_id'],'',$item_code); 
             echo json_encode($data);
         }
 }

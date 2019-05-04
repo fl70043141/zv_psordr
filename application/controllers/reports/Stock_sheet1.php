@@ -18,13 +18,7 @@ class Stock_sheet extends CI_Controller {
 //            $data['search_list'] = $this->Sales_invoices_model->search_result();
             $data['main_content']='reports_all/inventory/stock_sheet/search_stock_sheet_report'; 
             $data['location_list'] = get_dropdown_data(INV_LOCATION,'location_name','id','Location');
-            $data['item_cat_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Gem Category','is_gem = 1');
-            
-            $data['treatments_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','No Treatment','dropdown_id = 5'); //14 for treatments
-            $data['shape_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','No Shape','dropdown_id = 16'); //16 for Shape
-            $data['color_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','No Color','dropdown_id = 17'); //17 for Color
-            $data['item_type_list'] = get_dropdown_data(ITEM_TYPES,'item_type_name','id','No Item Type'); 
-            
+            $data['item_cat_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','Item Cayegory');
             $this->load->view('includes/template',$data);
         }
         
@@ -42,8 +36,8 @@ class Stock_sheet extends CI_Controller {
         }
         
         public function search(){ //view the report
-            $data['rep_data'] = $this->load_data(); 
-            $this->load->view('reports_all/inventory/stock_sheet/search_stock_sheet_report_result',$data);
+            $invoices = $this->load_data(); 
+            $this->load->view('reports_all/inventory/stock_sheet/search_stock_sheet_report_result',$invoices);
 	} 
         
         public function print_report(){ 
@@ -88,14 +82,14 @@ class Stock_sheet extends CI_Controller {
             $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
                     
             // set font
-            $pdf->SetFont('times', '', 9.4);
+            $pdf->SetFont('times', '', 10);
         
         
             $pdf->AddPage();   
             $pdf->SetTextColor(32,32,32);     
             $html = '<table border="0">
                         <tr>
-                            <td><b>Report: Gemstone Stock Summary </b></td>
+                            <td><b>Report: Stock Summary </b></td>
                             <td align="right">Printed on : '.date(SYS_DATE_FORMAT).'</td>
                         </tr>
                         <tr>
@@ -116,24 +110,37 @@ class Stock_sheet extends CI_Controller {
                                 <th align="left" colspan="6">'.$i.'. <u>'.$item_stocks['item_category_name'].'</u></th>
                             </tr>
                             <tr class="colored_bg">
-                                <th width="10%" align="center">#</th> 
-                                <th width="25%" align="center">Code</th> 
-                                <th width="35%" align="center">Desc</th> 
-                                <th width="30%" align="center" colspan="1">In Stock</th>
-                            </tr> 
+                                <th width="14%" align="left">Code</th> 
+                                <th width="23%" align="left">Desc</th> 
+                                <th width="21%" align="center" colspan="2">In Stock</th> 
+                                <th width="21%" align="center" colspan="2">On Order</th>  
+                                <th width="21%" align="center" colspan="2">Available</th>
+                            </tr>
+                            <tr class="colored_bg">
+                                <th width="14%" align="left"></th> 
+                                <th width="23%" align="left"></th> 
+                                <th width="11%" align="right">Weight</th> 
+                                <th width="10%" align="center">Qty</th>   
+                                <th width="11%" align="right">Weight</th> 
+                                <th width="10%" align="center">Qty</th>   
+                                <th width="11%" align="right">Weight</th> 
+                                <th width="10%" align="center">Qty</th>    
+                            </tr>
                         </thead>
                         <tbody>';
-                        $j=1;
                        foreach ($item_stocks['item_list'] as $item){  
-                                        if($item['units_available']>0 || $item['units_on_workshop']>0 || $item['units_on_consignee']>0){
-                                           $html .= '<tr>
-                                                        <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$j.'</td>
-                                                        <td width="25%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$item['item_code'].'</td>
-                                                        <td width="35%" align="center" style="border-right: 1px solid #cdd0d4;">'.$item['item_name'].'</td>
-                                                        <td width="30%" align="center" style="border-right: 1px solid #cdd0d4;" >'.$item['units_available'].' '.$item['uom_name'].(($item['uom_id_2']!=0)?' | '.$item['units_available_2'].' '.$item['uom_name_2']:'').'</td> 
+                                            if($item['units_available']>0){
+                                            $html .= '<tr>
+                                                        <td width="14%" align="left">'.$item['item_code'].'</td>
+                                                        <td width="23%" align="left">'.$item['item_name'].'</td>
+                                                        <td width="11%" align="right" >'.$item['units_available'].' '.$item['uom_name'].'</td>
+                                                        <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;">'.(($item['uom_id_2']!=0)?$item['units_available_2'].' '.$item['uom_name_2']:'-').'</td>
+                                                        <td width="11%" align="right">'.$item['units_on_order'].' '.$item['uom_name'].'</td>
+                                                        <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;">'.(($item['uom_id_2']!=0)?$item['units_on_reserve_2'].' '.$item['uom_name_2']:'').'</td>
+                                                        <td width="11%" align="right">'.($item['units_available']-$item['units_on_reserve']).' '.$item['uom_name'].'</td>
+                                                        <td width="10%" align="center">'.($item['units_available_2']-$item['units_on_reserve_2']).' '.$item['uom_name_2'].'</td>
 
                                                     </tr>';
-                                           $j++;
                                             }
                                         }      
             $html .= '</tbody> 
@@ -160,10 +167,9 @@ class Stock_sheet extends CI_Controller {
                         line-height: 20px;
                     }
                     .table-line td{ 
-                        font-size: 6px;;
+                        font-size: 8;
                     }
                     </style>';
-//            echo '<pre>';            print_r($html); die;
             $pdf->writeHTMLCell(190,'',10,'',$html);
             
             $pdf->SetFont('times', '', 12.5, '', false);
@@ -179,9 +185,9 @@ class Stock_sheet extends CI_Controller {
         public function  load_data(){
             $invoices = array();
             $input = (empty($this->input->post()))? $this->input->get():$this->input->post(); 
-//            echo '<pre>';            print_r($input); die;  
-            $this->load->model("Reports_all_model");
-            $item_stocks = $this->Reports_all_model->get_item_stocks($input);
+//            echo '<pre>';            print_r($input); die; 
+//            $this->load->model("Reports_all_model");
+            $item_stocks = $this->Reports_all_model->get_item_stocks($input['location_id'],$input['item_category_id']);
             
 //            echo '<pre>';            print_r($item_stocks); die; 
             $ret_arr = array();

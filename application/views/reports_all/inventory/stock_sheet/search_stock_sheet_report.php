@@ -9,7 +9,7 @@ $(document).ready(function(){
     }); 
     $("#search_btn").click(function(){
 		event.preventDefault();
-//		get_results();
+		get_results();
     });
     $("#print_btn").click(function(){
         var post_data = jQuery('#form_search').serialize(); 
@@ -81,27 +81,45 @@ $(document).ready(function(){
                             <div class="row col-md-12 center-block">  
                                         
                                         <div class="col-md-3">  
-                                                <div class="form-group pad">
+                                                <div class="form-group pad  no-pad-top">
                                                     <label for="location_id">Item Location</label>
                                                      <?php echo form_dropdown('location_id',$location_list,set_value('location_id'),' class="form-control select2" id="location_id"');?>
                                               
                                                 </div> 
                                         </div>  
                                         <div class="col-md-3">  
-                                                <div class="form-group pad">
+                                                <div class="form-group pad  no-pad-top">
                                                     <label for="item_category_id">Item Cat.</label>
                                                      <?php echo form_dropdown('item_category_id',$item_cat_list,set_value('item_category_id'),' class="form-control select2" id="item_category_id"');?>
                                               
                                                 </div> 
+                                        </div>    
+                                        <div class="col-md-3">  
+                                                <div class="form-group pad  no-pad-top">
+                                                    <label for="min_weight">Minimum Units).</label>
+                                                     <?php echo form_input('min_weight',set_value('min_weight',0),' class="form-control" placeholder="Enter Minimim Carat weight"  id="min_weight"');?>
+                                               </div> 
+                                        </div>    
+                                        <div class="col-md-3">  
+                                                <div class="form-group pad  no-pad-top">
+                                                    <label for="max_weight">Maximum Units <input type="checkbox" name="max_weight_check" id="max_weight_check" id="max_weight_check" value="1"></label>
+                                                     <?php echo form_input('max_weight',set_value('max_weight',10),' class="form-control" placeholder="Enter Maximum Carat weight" id="max_weight"');?>
+                                               </div> 
+                                        </div>    
+                                        <div class="col-md-3">  
+                                                <div class="form-group pad  no-pad-top">
+                                                    <label for="item_code">Item Code</label>
+                                                     <?php echo form_input('item_code',set_value('item_code',''),' class="form-control" placeholder="Search by Code" id="max_weight"');?>
+                                               </div> 
                                         </div>    
                                     </div>
                               
                         </div>
                     </div>
                 <div class="panel-footer">
-                                    <button class="btn btn-default">Clear Form</button>                                    
+                                    <button  class="btn btn-default">Clear Form</button>                                    
                                     <a id="print_btn" class="btn btn-info margin-r-5 pull-right"><span class="fa fa-print"></span> Print</a>
-                                    <!--<a id="search_btn" class="btn btn-primary margin-r-5 pull-right"><span class="fa fa-search"></span> Search</a>-->
+                                    <a id="search_btn" class="btn btn-primary margin-r-5 pull-right"><span class="fa fa-search"></span> Search</a>
                                 </div>
               </div>
     </section>
@@ -110,4 +128,16 @@ $(document).ready(function(){
                          
                             
                         </div> 
+        
+     <div class="col-md-12">
+    <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Search Results</h3>
+            </div>
+            <!-- /.box-header -->
+            <div  id="result_search" class="box-body fl_scrollable_x"> </div>
+            <!-- /.box-body -->
+          </div>
+       
+     </div>
 </div> 

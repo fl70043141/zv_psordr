@@ -10,7 +10,7 @@ class Reports_all_model extends CI_Model
                       STOCK SHEET REPORTS MODEL FUNCIONS
 ------------------------------------------------------------*/
         
-    public function get_item_stocks($location_id='',$category_id='',$where=''){ 
+    public function get_item_stocks($data='',$where=''){ 
 //            echo '<pre>';            print_r($input); die;
         $this->db->select('is.*'); 
         $this->db->select('itm.item_name,itm.item_code,itm.item_category_id'); 
@@ -20,10 +20,16 @@ class Reports_all_model extends CI_Model
         $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = is.uom_id)  as uom_name');
         $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = is.uom_id_2)  as uom_name_2');
         $this->db->join(ITEMS.' itm','itm.id = is.item_id'); 
-        $this->db->from(ITEM_STOCK.' is'); 
-        if($location_id!='')$this->db->where('is.location_id',$location_id);
-        if($category_id!='')$this->db->where('itm.item_category_id',$category_id);
+        $this->db->from(ITEM_STOCK.' is');  
         if($where!='')$this->db->where($where);
+        
+        if(isset($data['location_id']) && $data['location_id'] !='')$this->db->where('is.location_id',$data['location_id']);
+        if(isset($data['item_category_id']) && $data['item_category_id'] !='')$this->db->where('itm.item_category_id',$data['item_category_id']);
+        
+        if(isset($data['item_code']) && $data['item_code'] !='')$this->db->like('itm.item_code',$data['item_code']);
+        if(isset($data['min_weight']) && $data['min_weight'] >0)$this->db->where('is.units_available >',$data['min_weight']);
+        if(isset($data['max_weight_check']) && isset($data['max_weight']) && $data['max_weight'] >0)$this->db->where('is.units_available <',$data['max_weight']);
+        
         $this->db->where('is.deleted',0);
         $result = $this->db->get()->result_array();   
 //echo $this->db->last_query(); die;
