@@ -2,7 +2,44 @@
   <!-- Main content -->
     <section class="content">
       <!-- Small boxes (Stat box) -->
+      
       <div class="row">
+          <div class="col-md-4">
+              <a href="<?php echo base_url('Order_ecatalog');?>" class="btn btn-block btn-social btn-vk btn-lg">
+                <i class="fa fa-dropbox"></i> Create New Order
+              </a>
+              <br>
+          </div>
+          <div class="col-md-4">
+              <a href="<?php echo base_url('Sales_invoices/add');?>"  class="btn btn-block btn-social btn-google btn-lg">
+                <i class="fa fa-shopping-bag"></i> Create New Invoice
+              </a>
+              <br>
+          </div>
+          <div class="col-md-4">
+              <a href="<?php echo base_url('Purchasing_items/add');?>"   class="btn btn-block btn-social btn-github btn-lg">
+                <i class="fa fa-cart-arrow-down"></i> Create New Purchasing Invoice
+              </a>
+              <br>
+          </div>
+      </div>
+      <div class="row">
+          
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div id="top_quick_entry_box" class="small-box bg-red-gradient">
+              <div id="" class="inner">
+              <h4 id="top_expense_box_amount"><?php echo $total_6['count'];?></h4>
+              <p style="font-size:20px;" id="top_expense_box_alabel"><?php echo $total_6['label'];?></p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-plus"></i>
+            </div>
+            <a href="<?php echo base_url('Sales_order_items');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div id="top_sale_box" class="small-box bg-green">
@@ -34,22 +71,6 @@
         </div>
         <!-- ./col -->
         
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div id="top_quick_entry_box" class="small-box <?php echo $total_5['color'];?>">
-              <div id="" class="inner">
-              <h4 id="top_expense_box_amount"><?php echo $total_5['count'];?></h4>
-
-              <p style="font-size:20px;" id="top_expense_box_alabel"><?php echo $total_5['label'];?></p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-money"></i>
-            </div>
-            <a href="<?php echo base_url('reports/ledgers/Pnl_gemstones');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div id="" class="small-box bg-yellow">
@@ -61,7 +82,7 @@
             <div class="icon">
               <i class="fa fa-list"></i>
             </div>
-              <a href="<?php echo base_url('reports/Stock_costing');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+              <a href="<?php echo base_url('reports/Stock_sheet');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
       </div>

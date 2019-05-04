@@ -63,8 +63,8 @@ class Dashboard extends CI_Controller {
                                             'count' => $this->Dashboard_model->get_tbl_couts(SUPPLIER_INVOICE),
                                             );
             $data['total_3']= array(
-                                            'count' =>$tot_count,
-                                            'label' => "ITEMS: ".count($available),
+                                            'count' =>count($available),
+                                            'label' => "ITEMS ",
                                             );
             $data['total_4']= array(
                                         'label' =>'Categories',
@@ -74,6 +74,11 @@ class Dashboard extends CI_Controller {
                                         'label' =>(($pnl_amount>0)?'PROFIT ':'LOST ').' FROM SALES',
                                         'count' => $cur_left_synbol.' '.number_format(abs($pnl_amount),2).' '.$cur_right_synbol,
                                         'color' => (($pnl_amount>0)?'bg-lime-active ':'bg-red ')
+                                        );
+            
+            $data['total_6']= array(
+                                        'label' =>'Orders',
+                                        'count' => $this->Dashboard_model->get_tbl_couts(SALES_ORDERS),
                                         );
             return $data;
         }
