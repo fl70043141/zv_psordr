@@ -608,15 +608,18 @@ class Sales_order_items extends CI_Controller {
             $this->load->library('Pdf');
             
             // create new PDF document
+            
             $pdf = new Pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->fl_header='header_am';//invice bg
-            $pdf->fl_data_arr=array('order_no'=>$inv_dets['sales_order_no']);//invice bg
+            $pdf->fl_header='header_jewel';//invice bg
+            $pdf->fl_header_title='ORDER';//invice bg
+            $pdf->fl_header_title_RTOP='CUSTOMER COPY';//invice bg
+            $pdf->fl_footer_text=1;//invice bg
             
             // set document information
             $pdf->SetCreator(PDF_CREATOR);
             $pdf->SetAuthor('Fahry Lafir');
-            $pdf->SetTitle('PDF AM Invoice');
-            $pdf->SetSubject('AM Invoice');
+            $pdf->SetTitle('PDF JWL Invoice');
+            $pdf->SetSubject('JWL Invoice');
             $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
             
             // set default header data

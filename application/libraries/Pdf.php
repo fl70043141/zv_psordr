@@ -41,8 +41,8 @@ class Pdf extends TCPDF
         $fontname = TCPDF_FONTS::addTTFfont('storage/fonts/Lato-Light.ttf', 'TrueTypeUnicode', '', 96);
         $this->SetFont($fontname, 'I', 8.2);
         $html = '<table> 
-                    <tr  align="center" style="line-height:20px;"><td  colspan="4"><br><br>Thank you for your Support! </td></tr>
-                    <tr><td width="100%" colspan="2" align="center">Acknowledges sales receipt describes above in items & fair condition; and is liable for payment in full, for any loss or damage whilst in their care/procession. The merchandise dscribed above are consigned on trust & approval for viewing and shall remain the property of '.SYSTEM_NAME.', Except & until paid for, in full.</td></tr>
+                    <tr  align="center" style="line-height:15px;"><td  colspan="4"><br><br>Thank you for your Support! </td></tr>
+                    <tr><td width="100%" style="font-size:9.8px;" colspan="2" align="center">We import chinese and Turkey products they are high quality products, and we sale wholesale and retail but we don`t sale any trading standard products. We don`t sale any character stuff and we don`t respond to any of those (branded) delivery we are not responsible for any damage, so there are no returns.</td></tr>
                 </table>  '; 
         if($this->fl_footer_text ==1){
             $this->SetY(-30);
@@ -198,7 +198,7 @@ class Pdf extends TCPDF
         // use the font
         $this->SetFont($fontname, '', 35, '', false);
         $this->SetTextColor(48,75,105);
-        $this->Text('60', 9, $company_dets[0]['company_name'], false, false, true, 0, 0, 'center', false,'',1);
+        $this->Text('78', 9, $company_dets[0]['company_name'], false, false, true, 0, 0, 'center', false,'',1);
         
         $this->SetTextColor(96,96,96);
         $fontname = TCPDF_FONTS::addTTFfont('storage/fonts/Lato-Light.ttf', 'TrueTypeUnicode', '', 96);
