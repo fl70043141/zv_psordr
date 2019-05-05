@@ -53,6 +53,8 @@ class Order_ecatalog extends CI_Controller {
                     $data['item_res'][$item['id']]['price_info'] = $this->Order_ecataog_modal->get_item_price($item['id'],16); 
                     
                 }
+            }else{
+                return false;
             }
 //                    echo '<pre>';            print_r($inputs); die;
             $data['category_id'] = $cat_id;

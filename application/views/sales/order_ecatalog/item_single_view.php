@@ -118,6 +118,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                 if(item_id == item_obj.item_id){
                                     init_id = count;
                                 }
+                                if(item_obj.images=="") item_obj.images='[]';
                                 var otr_images = JSON.parse(item_obj.images); 
                                 var cur_page = $('#curr_page_no').val();
                                 content += '<div id="'+item_obj.item_id+'_itemdiv" class="page_'+cur_page+' swiper-slide '+((item_obj.item_id == item_id)?'swiper-slide-active':'')+'">'+
