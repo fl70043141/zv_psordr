@@ -170,7 +170,8 @@
       <div class="image-grid__gutter-sizer col-md-12"></div> 
       <div class="row no-padding">
       <?php
-                                    if(!empty($item_res)){
+      
+                                    if(!empty($item_res) && isset($item_res)){
                                         foreach ($item_res as $item){
 //                                            echo '<pre>';print_r($item); die;
                                             echo '
@@ -191,6 +192,10 @@
                                                         </div>
                                                     </div>';
                                         }
+                                    }else{
+                                        echo '<div class="item image-grid__item no-padding"> 
+                                                            <h4>No Results Found.</h4> 
+                                                </div>';
                                     }
                                 ?> 
 
