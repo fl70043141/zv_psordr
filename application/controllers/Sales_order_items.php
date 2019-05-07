@@ -365,7 +365,7 @@ class Sales_order_items extends CI_Controller {
                                         );
                 
                 if(isset($exist_so_desc[$inv_item['item_id']])){ 
-                    echo 'exxist: '.$exist_so_desc[$inv_item['item_id']]['units'].'   -----  '.$inv_item['item_quantity'].'<br>';
+                    echo 'exxist: '.$exist_so_desc[$inv_item['item_id']]['units'].'  ['.$inv_item['item_id'].' ]-----  '.$inv_item['item_quantity'].'<br>';
                     if($exist_so_desc[$inv_item['item_id']]['units'] != $inv_item['item_quantity']){
                         $inv_item['item_quantity'] = $inv_item['item_quantity'] - $exist_so_desc[$inv_item['item_id']]['units'];
                         $data['item_stock_transection'][] = array(
@@ -424,7 +424,7 @@ class Sales_order_items extends CI_Controller {
             //old data for log update
             $existing_data = $this->Sales_order_items_model->get_single_row($inputs['id']);
             $data['pre_update_check'] = $this->stock_status_updatecheck($inputs['id']);
-            echo '<pre>';            print_r($data); die;
+//            echo '<pre>';            print_r($data); die;
             $edit_stat = $this->Sales_order_items_model->edit_db($inputs['id'],$data);
             
             if($edit_stat){

@@ -243,22 +243,22 @@ class Sales_order_items_model extends CI_Model
         public function edit_db($id,$data){
 //            echo '<pre>';            print_r($data); die; 
                 $this->db->trans_start();
-                if(!empty($data['pre_update_check']['updt_itm_trans_table'])){
-                    foreach ($data['pre_update_check']['updt_itm_trans_table'] as $key1=>$updt_trans_row){
-                        //remove transections
-                        $this->db->where('id', $key1);
-                        $this->db->where('deleted',0);
-                        $this->db->update(ITEM_STOCK_TRANS, $updt_trans_row);
-                    }
-                }
-                if(!empty($data['pre_update_check']['updt_itm_stock_table'])){
-                    foreach ($data['pre_update_check']['updt_itm_stock_table'] as $key2=>$updt_stock_row){
-                        //remove transections
-                        $this->db->where('id', $key2);
-                        $this->db->where('deleted',0);
-                        $this->db->update(ITEM_STOCK, $updt_stock_row);
-                    }
-                }
+//                if(!empty($data['pre_update_check']['updt_itm_trans_table'])){
+//                    foreach ($data['pre_update_check']['updt_itm_trans_table'] as $key1=>$updt_trans_row){
+//                        //remove transections
+//                        $this->db->where('id', $key1);
+//                        $this->db->where('deleted',0);
+//                        $this->db->update(ITEM_STOCK_TRANS, $updt_trans_row);
+//                    }
+//                }
+//                if(!empty($data['pre_update_check']['updt_itm_stock_table'])){
+//                    foreach ($data['pre_update_check']['updt_itm_stock_table'] as $key2=>$updt_stock_row){
+//                        //remove transections
+//                        $this->db->where('id', $key2);
+//                        $this->db->where('deleted',0);
+//                        $this->db->update(ITEM_STOCK, $updt_stock_row);
+//                    }
+//                }
 //                die; 
                 
 		$this->db->where('id', $id); 

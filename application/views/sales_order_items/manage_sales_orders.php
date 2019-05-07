@@ -451,6 +451,10 @@ $(document).ready(function(){
             get_item_dets(this.id);
     });
     $("#place_invoice").click(function(){
+            if($('#customer_id').val()==null){
+                fl_alert('info',"Customer field can not empty! Please select customer!")
+                return false;
+            } 
             if($('input[name^="inv_items"]').length<=0 && $('input[name^="action"]').value()=='Add'){
                 fl_alert('info',"Atleast one item need to create an invoice!")
                 return false;

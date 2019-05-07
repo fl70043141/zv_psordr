@@ -215,7 +215,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
 //                                var cw = $('#'+(this.id)).width();
 //                                $('#'+this.id).css({'height':(cw*0.75)+'px'});
 //                             }); 
-                            
+                            if(typeof (item_list) != 'undefined'){
                              $('.add-to-cart').click(function(){
                                 var add_item_id = (this.id).split("_")[0];
 
@@ -230,7 +230,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                     fl_alert('warning','Item Unit Price invalid!');
                                     return false;
                                 }
-                                
+//                                alert($('#'+add_item_id+'_qtyinpt').val()); 
                                 var post_data = jQuery('#form_item_view').serializeArray(); 
                                 post_data.push({name:"function_name",value:'add_to_tmp_order'}); 
                                 $.ajax({
@@ -253,6 +253,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                         });
                                 
                              });
+                            }
                         
                 }
             });
