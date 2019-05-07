@@ -249,6 +249,7 @@ class Items extends CI_Controller {
 	
 	function update(){
             $inputs = $this->input->post();   
+            $this->update_sales_price(0);
             $item_id = $this->input->post('id');   
             $inputs['status'] = (isset($inputs['status']))?1:0;
             $inputs['sales_excluded'] = (isset($inputs['sales_excluded']))?1:0;
@@ -363,9 +364,10 @@ class Items extends CI_Controller {
                 redirect(base_url($this->router->fetch_class()));
             } 
 	}	
-        function update_sales_price(){  
+        function update_sales_price($msg_need=1){  
             
             $inputs = $this->input->post();   
+//            echo '<pre>';            print_r($inputs); die;
             $sp_i =0;
             if($inputs['id']>0 && isset($inputs['prices']['sales']) && !empty($inputs['prices']['sales'])){
                 foreach ($inputs['prices']['sales'] as $sales_price){
@@ -385,7 +387,7 @@ class Items extends CI_Controller {
 //                    echo '<pre>';            print_r($sp_data);die;
                     if(empty($sales_price_exst)){ 
                         $insert = $this->Items_model->add_db_item_price($sp_data);
-                        if(!$insert){
+                        if(!$insert && $msg_need==1){
                             echo '<div class="alert alert-danger alert-dismissible fl_msg">
                                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                     </i> Failed! please retry!</div>';
@@ -393,7 +395,7 @@ class Items extends CI_Controller {
                         }
                     }else{
                         $update = $this->Items_model->edit_db_item_price($sales_price_exst[0]['id'],$sp_data);
-                        if(!$update){
+                        if(!$update && $msg_need==1){
                             echo '<div class="alert alert-danger alert-dismissible fl_msg">
                                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                     </i> Failed! please retry!</div>';
@@ -403,17 +405,19 @@ class Items extends CI_Controller {
                     }
                     $sp_i++; 
                 }
-                if($sp_i>0){
+                if($sp_i>0 && $msg_need==1){
                     echo '<div class="alert alert-success alert-dismissible fl_msg">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                         </i> Success! Price updated.</div>';
                 }
 //                die;
             }else{
+                if($msg_need==1){
                      echo '<div class="alert alert-danger alert-dismissible fl_msg">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                             </i> Failed! You need to create item first!</div>'; 
-                } 
+                    } 
+                }
                     
         }
         function update_purchasing_price(){

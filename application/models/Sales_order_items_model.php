@@ -60,7 +60,8 @@ class Sales_order_items_model extends CI_Model
             $this->db->where('i.id',$id);
             $this->db->where('i.deleted',0);
             if($where!='') $this->db->where($where);
-            $result = $this->db->get()->result_array();  
+            $result = $this->db->get()->result_array();   
+//            echo $this->db->last_query(); die;
             return $result[0];
 	}               
          public function get_so_desc($id){ 

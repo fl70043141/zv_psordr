@@ -342,6 +342,12 @@ class Sales_order_items extends CI_Controller {
             $data['so_desc'] = array(); 
             $data['item_stock_transection'] = array(); //stock transection Saleorder
             
+            $exist_so_desc = array();
+            $old_so_desc = $this->Sales_order_items_model->get_so_desc($sale_order_id);
+            foreach ($old_so_desc as $old_item){
+                $exist_so_desc[$old_item['item_id']] = $old_item;
+            }
+            
             foreach ($inputs['inv_items'] as $inv_item){
                 $data['so_desc'][] = array(
                                             'sales_order_id' => $sale_order_id,
@@ -358,35 +364,67 @@ class Sales_order_items extends CI_Controller {
                                             'deleted' => 0,
                                         );
                 
-                $data['item_stock_transection'][] = array(
-                                                            'transection_type'=>6, //6 for Sales Order transection
-                                                            'trans_ref'=>$inputs['id'], 
-                                                            'item_id'=>$inv_item['item_id'], 
-                                                            'units'=>$inv_item['item_quantity'], 
-                                                            'uom_id'=>$inv_item['item_quantity_uom_id'], 
-                                                            'units_2'=>$inv_item['item_quantity_2'], 
-                                                            'uom_id_2'=>$inv_item['item_quantity_uom_id_2'], 
-                                                            'location_id'=>$inputs['location_id'], 
-                                                            'status'=>1, 
-                                                            'added_on' => date('Y-m-d'),
-                                                            'added_by' => $this->session->userdata(SYSTEM_CODE)['ID'],
-                                                            );
-                
-                if($inv_item['item_quantity_uom_id_2']!=0)
-                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],$inv_item['item_quantity_uom_id_2'],$inv_item['item_quantity_2']);
-                else
-                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity']);
-                
-                if(!empty($item_stock_data)){
-                    $data['item_stock'][] = $item_stock_data;
+                if(isset($exist_so_desc[$inv_item['item_id']])){ 
+                    echo 'exxist: '.$exist_so_desc[$inv_item['item_id']]['units'].'   -----  '.$inv_item['item_quantity'].'<br>';
+                    if($exist_so_desc[$inv_item['item_id']]['units'] != $inv_item['item_quantity']){
+                        $inv_item['item_quantity'] = $inv_item['item_quantity'] - $exist_so_desc[$inv_item['item_id']]['units'];
+                        $data['item_stock_transection'][] = array(
+                                                                    'transection_type'=>6, //6 for Sales Order transection
+                                                                    'trans_ref'=>$inputs['id'], 
+                                                                    'item_id'=>$inv_item['item_id'], 
+                                                                    'units'=>$inv_item['item_quantity'], 
+                                                                    'uom_id'=>$inv_item['item_quantity_uom_id'], 
+                                                                    'units_2'=>$inv_item['item_quantity_2'], 
+                                                                    'uom_id_2'=>$inv_item['item_quantity_uom_id_2'], 
+                                                                    'location_id'=>$inputs['location_id'], 
+                                                                    'status'=>1, 
+                                                                    'added_on' => date('Y-m-d'),
+                                                                    'added_by' => $this->session->userdata(SYSTEM_CODE)['ID'],
+                                                                    );
+                        if($inv_item['item_quantity_uom_id_2']!=0)
+                            $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],$inv_item['item_quantity_uom_id_2'],$inv_item['item_quantity_2']);
+                        else
+                            $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity']);
+
+                        if(!empty($item_stock_data)){
+                            $data['item_stock'][] = $item_stock_data;
+                        }
+                    }
+                    unset($exist_so_desc[$inv_item['item_id']]);
                 }
                 
             }
             
+            foreach ($exist_so_desc as $key => $so_exist) { 
+                    $data['item_stock_transection'][] = array(
+                                                                'transection_type'=>6, //6 for Sales Order transection
+                                                                'trans_ref'=>$inputs['id'], 
+                                                                'item_id'=>$so_exist['item_id'], 
+                                                                'units'=> (-$so_exist['units']), 
+                                                                'uom_id'=>$so_exist['unit_uom_id'], 
+                                                                'units_2'=>$so_exist['secondary_unit'], 
+                                                                'uom_id_2'=>$so_exist['secondary_unit_uom_id'], 
+                                                                'location_id'=>$inputs['location_id'], 
+                                                                'status'=>1, 
+                                                                'added_on' => date('Y-m-d'),
+                                                                'added_by' => $this->session->userdata(SYSTEM_CODE)['ID'],
+                                                                );
+                    if($so_exist['secondary_unit_uom_id']!=0)
+                        $item_stock_data = $this->stock_status_check($so_exist['item_id'],$inputs['location_id'],$so_exist['unit_uom_id'], -$so_exist['units'],$so_exist['item_quantity_uom_id_2'],$so_exist['secondary_unit']);
+                    else
+                        $item_stock_data = $this->stock_status_check($so_exist['item_id'],$inputs['location_id'],$so_exist['unit_uom_id'], -$so_exist['units']);
+
+                    if(!empty($item_stock_data)){
+                        $data['item_stock'][] = $item_stock_data;
+                    }
+            }
+            
+//            echo '<pre>';            print_r($exist_so_desc); die;
+            
             //old data for log update
             $existing_data = $this->Sales_order_items_model->get_single_row($inputs['id']);
             $data['pre_update_check'] = $this->stock_status_updatecheck($inputs['id']);
-//            echo '<pre>';            print_r($data); die;
+            echo '<pre>';            print_r($data); die;
             $edit_stat = $this->Sales_order_items_model->edit_db($inputs['id'],$data);
             
             if($edit_stat){

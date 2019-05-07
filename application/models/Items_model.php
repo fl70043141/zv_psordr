@@ -28,6 +28,8 @@ class Items_model extends CI_Model
           public function get_single_row($id){
             $this->db->select('i.*');
             $this->db->select('ic.is_gem');
+            $this->db->select('(select id from '.ITEMS.' where id = (select min(id) from '.ITEMS.' where id > i.id)) as next_id');
+            $this->db->select('(select id from '.ITEMS.' where id = (select max(id) from '.ITEMS.' where id < i.id)) as prev_id');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = i.item_uom_id)  as unit_abbreviation');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = i.item_uom_id_2)  as unit_abbreviation_2');
             $this->db->join(ITEM_CAT." ic","ic.id = i.item_category_id");  
@@ -35,6 +37,7 @@ class Items_model extends CI_Model
             $this->db->where('i.id',$id);
             $this->db->where('i.deleted',0);
             $result = $this->db->get()->result_array();  
+//            echo $this->db->last_query(); die;
             return $result;
 	}
         public function get_item_prices($item_id,$where=''){ 

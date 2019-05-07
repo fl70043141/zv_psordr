@@ -134,6 +134,9 @@ endswitch;
                 <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'add'))?'<a href="'.base_url($this->router->fetch_class().'/add').'" class="btn btn-app "><i class="fa fa-plus"></i>Create New</a>':''; ?>
                 <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'edit'))?'<a href="'.base_url($this->router->fetch_class().'/edit/'.$result['id']).'" class="btn btn-app "><i class="fa fa-pencil"></i>Edit</a>':''; ?>
                 <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'delete'))?'<a href="'.base_url($this->router->fetch_class().'/delete/'.$result['id']).'" class="btn btn-app  '.(($action=='Delete')?'hide ':'').' "><i class="fa fa-trash"></i>Delete</a>':''; ?>
+                
+                <?php if(isset($result['next_id']) && $result['next_id']!=NULL) echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'edit'))?'<a href="'.base_url($this->router->fetch_class().'/edit/'.$result['next_id']).'" class="btn btn-app pull-right"><i class="fa fa-angle-right"></i>Next</a>':''; ?>
+                <?php if(isset($result['prev_id']) && $result['prev_id']!=NULL) echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], $this->router->class, 'edit'))?'<a href="'.base_url($this->router->fetch_class().'/edit/'.$result['prev_id']).'" class="btn btn-app pull-right"><i class="fa fa-angle-left"></i>Previous</a>':''; ?>
                 <!--<a class="btn btn-app "><i class="fa fa-trash"></i>Delete</a>-->
             </div>
         </div>
@@ -143,7 +146,7 @@ endswitch;
               <!-- general form elements -->
               <div class="box box-primary">
                 <div class="box-header with-border">
-                  <h3 class="box-title"><?php echo $action;?> </h3>
+                    <h3 class="box-title"><?php echo $action;?> Item <?php echo ($result['item_code']!='')?" (".$result['item_code'].")":'';?></h3>
                 </div>
                 <!-- /.box-header -->
                 <!-- form start -->
@@ -159,9 +162,9 @@ endswitch;
                                 <div class="nav-tabs-custom">
                                   <ul class="nav nav-tabs">
                                     <li class="active"><a href="#tab_1" data-toggle="tab">Information</a></li>  
-                                    <li><a href="#tab_2" data-toggle="tab">Sales Pricing</a></li> 
+                                    <!--<li><a href="#tab_2" data-toggle="tab">Sales Pricing</a></li>--> 
                                     <li><a href="#tab_3" data-toggle="tab">Purchasing Pricing</a></li> 
-                                    <li><a href="#tab_4" data-toggle="tab">Images</a></li> 
+                                    <!--<li><a href="#tab_4" data-toggle="tab">Images</a></li>--> 
                                     <!--<li><a href="#tab_5" data-toggle="tab">Transection</a></li>--> 
                                     <li><a href="#tab_6" data-toggle="tab">Status</a></li> 
 
@@ -169,8 +172,8 @@ endswitch;
                                   </ul>
                                   <div class="tab-content fl_scroll">
                                       <div class="tab-pane active" id="tab_1"> 
-                                              <div class="row"> 
-                                                  <div class="col-md-6">
+                                        <div class="row"> 
+                                            <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Item Code<span style="color: red">*</span></label>
                                                     <div class="col-md-9">    
@@ -207,7 +210,7 @@ endswitch;
                                                         <span class="help-block"><?php echo form_error('item_uom_id');?></span>
                                                     </div> 
                                                 </div>
-                                                <div class="form-group">
+                                                <div hidden class="form-group">
                                                     <label class="col-md-3 control-label">Secondary UOM<span style="color: red">*</span></label>
                                                     <div class="col-md-9">    
                                                        <?php  echo form_dropdown('item_uom_id_2',$item_uom_list_2,set_value('item_uom_id_2',$result['item_uom_id_2']),' class="form-control " data-live-search="true" id="item_uom_id_2" '.$o_dis.'');?> 
@@ -215,7 +218,7 @@ endswitch;
                                                     </div> 
                                                 </div>
                                                 
-                                                <div class="form-group">
+                                                <div hidden class="form-group">
                                                     <label class="col-md-3 control-label">Item Type<span style="color: red">*</span></label>
                                                     <div class="col-md-9">    
                                                        <?php  echo form_dropdown('item_type_id',$item_type_list,set_value('item_type_id',$result['item_type_id']),' class="form-control " data-live-search="true" id="item_type_id" '.$o_dis.'');?> 
@@ -229,6 +232,52 @@ endswitch;
                                                         <span class="help-block"><?php echo form_error('addon_type_id');?></span>
                                                     </div> 
                                                 </div>
+                                                
+                                                     
+                                                    <div class="col-md-12">
+                                                        <hr>
+                                                        <h4>Sale Price</h4>
+                                                      <table class="table table-bordered">
+                                                          <tbody>
+                                                              <tr>
+                                                                  <th>Sales Type</th>
+                                                                  <th>Currency</th>
+                                                                  <th>Price</th> 
+                                                              </tr>
+                                                              <?php
+                                                              foreach ($sales_type_list as $key=>$sale_type){
+                                                                  $sale_price_arr = array();
+                                                                  if(isset($item_prices['sales'])){
+                                                                      foreach ($item_prices['sales'] as $sale_price){
+                                                                          if($sale_price['sales_type_id']==$key){
+                                                                              $sale_price_arr = $sale_price;
+                                                                              break;
+                                                                          }else{
+                                                                              $sale_price_arr=0;
+                                                                          }
+                                                                      }
+                                                                  }
+
+                                                                  echo '
+                                                                          <tr>
+                                                                              <td>'.$sale_type.'</td>
+                                                                              <td>'.form_dropdown('prices[sales]['.$key.'][currency_id]',$currency_list,set_value('prices["sales"]currency_id['.$key.']',(isset($sale_price_arr['currency_code'])?$sale_price_arr['currency_code']:0)),' class="form-control" data-live-search="true" id="prices["sales"]currency_id['.$key.']" '.$o_dis.''). form_hidden('prices[sales]['.$key.'][sales_type_id]',$key).' </td> 
+                                                                              <td>'.form_input('prices[sales]['.$key.'][amount]', set_value('prices["sales"]amount['.$key.']', number_format((isset($sale_price_arr['price_amount'])?$sale_price_arr['price_amount']:0),2,'.','')), 'id="prices["sales"]amount['.$key.']" class="form-control" placeholder="Enter Short name"'.$dis.' '.$o_dis.' ').'</td>
+                                                                            </tr>  
+                                                                      ';
+                                                              }
+                                                              ?>
+
+                                                          </tbody>
+                                                      </table>
+                                                  </div> 
+                                          
+                                                <div <?php echo $view;?> class="col-md-12">
+                                                  <a id="sp_submit_btn" class="btn btn-default">Update</a>
+                                                  <div id="sp_result"></div>
+                                                  <hr>
+                                              </div>
+                                          
                                             </div>
                                           
                                          <div class="col-md-6">
@@ -365,8 +414,17 @@ endswitch;
                                                 <div class="col-md-3">
                                                     <img id="def_img_holder" class="profile-user-img img-responsive img-circle thumbnail" src="<?php echo base_url(ITEM_IMAGES.(($result['image']!="")?$result['id'].'/'.$result['image']:'../default/default.jpg')); ?>" alt="User profile picture">
                                                 </div>
-                                            </div>
-                                          
+                                            </div>  
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">All Images</label>
+                                                    <div class="col-md-9">                                            
+                                                           
+                                                        <div class="fl_file_uploader2">
+                                                            <input type="file" name="item_images" class="fl_files" data-fileuploader-files='<?php echo $result['images'];?>'> 
+                                                        </div> 
+                                                        <span class="help-block"><?php echo form_error('item_images');?></span>
+                                                    </div>
+                                                </div> 
                                          </div>
                                               </div>
 
@@ -374,49 +432,7 @@ endswitch;
                                       
                                       <!-- /.tab-pane -->
                                       <div class="tab-pane" id="tab_2">
-                                        <?php // echo form_open("", 'id="form_sales_price" class="form-horizontal"')?>      
-                                          <div class="col-md-9">
-                                            <table class="table table-bordered">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>Sales Type</th>
-                                                        <th>Currency</th>
-                                                        <th>Price</th> 
-                                                    </tr>
-                                                    <?php
-                                                    foreach ($sales_type_list as $key=>$sale_type){
-                                                        $sale_price_arr = array();
-                                                        if(isset($item_prices['sales'])){
-                                                            foreach ($item_prices['sales'] as $sale_price){
-                                                                if($sale_price['sales_type_id']==$key){
-                                                                    $sale_price_arr = $sale_price;
-                                                                    break;
-                                                                }else{
-                                                                    $sale_price_arr=0;
-                                                                }
-                                                            }
-                                                        }
-                                                        
-                                                        echo '
-                                                                <tr>
-                                                                    <td>'.$sale_type.'</td>
-                                                                    <td>'.form_dropdown('prices[sales]['.$key.'][currency_id]',$currency_list,set_value('prices["sales"]currency_id['.$key.']',(isset($sale_price_arr['currency_code'])?$sale_price_arr['currency_code']:0)),' class="form-control" data-live-search="true" id="prices["sales"]currency_id['.$key.']" '.$o_dis.''). form_hidden('prices[sales]['.$key.'][sales_type_id]',$key).' </td> 
-                                                                    <td>'.form_input('prices[sales]['.$key.'][amount]', set_value('prices["sales"]amount['.$key.']', number_format((isset($sale_price_arr['price_amount'])?$sale_price_arr['price_amount']:0),2,'.','')), 'id="prices["sales"]amount['.$key.']" class="form-control" placeholder="Enter Short name"'.$dis.' '.$o_dis.' ').'</td>
-                                                                  </tr>  
-                                                            ';
-                                                    }
-                                                    ?>
-                                                    
-                                                </tbody>
-                                            </table>
-                                        </div> 
-                                          
-                                          <div <?php echo $view;?> class="col-md-12">
-                                            <a id="sp_submit_btn" class="btn btn-default">Update</a>
-                                            <div id="sp_result"></div>
-                                            <hr>
-                                        </div>
-                                          
+                                        <?php // echo form_open("", 'id="form_sales_price" class="form-horizontal"')?> 
                                         <?php // echo form_close(); ?>   
                                       </div>
                                       <!-- /.tab-pane --> 
@@ -486,19 +502,7 @@ endswitch;
                                       <!-- /.tab-pane --> 
                                       <!-- /.tab-pane -->
                                       <div class="tab-pane" id="tab_4">
-                                           <div class="col-md-12">
-                                               <br>
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">All Images</label>
-                                                    <div class="col-md-9">                                            
-                                                           
-                                                        <div class="fl_file_uploader2">
-                                                            <input type="file" name="item_images" class="fl_files" data-fileuploader-files='<?php echo $result['images'];?>'> 
-                                                        </div> 
-                                                        <span class="help-block"><?php echo form_error('item_images');?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                          
                                            <div class="col-md-12">
                                                <br>
                                                 <div class="form-group">
@@ -549,9 +553,9 @@ endswitch;
                                                 <tbody>
                                                     <tr>
                                                         <th>Location</th>
-                                                        <th>Quantity on Hand</th> 
-                                                        <th>On Order</th> 
                                                         <th>Available</th> 
+                                                        <th>On Order</th> 
+                                                        <th>Quantity on Hand</th> 
                                                     </tr>
                                                     <?php
                                                         foreach ($stock_status as $stock_loc){
@@ -559,8 +563,8 @@ endswitch;
                                                             echo '<tr>
                                                                         <td>'.$stock_loc['location_name'].'</td>
                                                                         <td>'.$stock_loc['units_available'].' '.$stock_loc['uom_name'].(($stock_loc['uom_id_2']!=0)?' | '.$stock_loc['units_available_2'].' '.$stock_loc['uom_name_2']:'').'</td>
-                                                                        <td>'.$stock_loc['units_on_order'].' '.$stock_loc['uom_name'].'</td>
-                                                                        <td>'.($stock_loc['units_available']-$stock_loc['units_on_consignee'] - $stock_loc['units_on_order']).' '.$stock_loc['uom_name'].' | '.($stock_loc['units_available_2']-$stock_loc['units_on_consignee_2'] - $stock_loc['units_on_order_2']).' '.$stock_loc['uom_name_2'].'</td>
+                                                                        <td>'.$stock_loc['units_on_demand'].' '.$stock_loc['uom_name'].'</td>
+                                                                        <td>'.($stock_loc['units_available'] + $stock_loc['units_on_demand']).' '.$stock_loc['uom_name'].'</td>
                                                                       
                                                                       </tr>  ';
                                                         }
