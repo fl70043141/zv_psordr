@@ -31,7 +31,7 @@ $inv_trans = $inv_data['inv_transection'];
     
     
         <div class="">
-            <a href="<?php echo base_url('Sales_orders/view/'.((isset($inv_dets['so_id'])?$inv_dets['so_id']:"")));?>" class="btn btn-app  <?php echo (($inv_dets['so_id']>0)?"":"hide");?>"><i class="fa fa-backward"></i>Back to Order</a>
+            <a href="<?php echo base_url('Sales_order_items/view/'.((isset($inv_dets['so_id'])?$inv_dets['so_id']:"")));?>" class="btn btn-app  <?php echo (($inv_dets['so_id']>0)?"":"hide");?>"><i class="fa fa-backward"></i>Back to Order</a>
             <a href="<?php echo base_url($this->router->fetch_class().'/add');?>" class="btn btn-app "><i class="fa fa-plus"></i>Create New</a>
             <a href="<?php echo base_url($this->router->fetch_class());?>" class="btn btn-app "><i class="fa fa-search"></i>Search</a>
             <?php echo ($this->user_default_model->check_authority($this->session->userdata(SYSTEM_CODE)['user_role_ID'], 'Payments', 'add'))?'<a id="add_payment_inv" href="#" class="btn btn-app "><i class="fa fa-money"></i>Payments</a>':''; ?>

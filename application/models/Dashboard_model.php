@@ -116,8 +116,8 @@ class Dashboard_model extends CI_Model
             
             if(isset($data['from_date']) && $data['from_date']!='') $this->db->where("i.invoice_date>= ",$data['from_date']);
             if(isset($data['to_date']) && $data['to_date']!='') $this->db->where("i.invoice_date<= ",$data['to_date']); 
-               
             $result = $this->db->get()->result_array(); 
+//            echo '<pre>';            print_r($result); die;
             return $result;
         }
         

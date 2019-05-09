@@ -67,6 +67,7 @@ class Sales_order_items_model extends CI_Model
          public function get_so_desc($id){ 
             $this->db->select('id.*, (id.unit_price*id.units*(100-id.discount_percent)*0.01) as sub_total');
             $this->db->select('im.item_code,im.image');
+            $this->db->select('(select inv.id from '.INVOICES.' inv LEFT JOIN '.INVOICE_DESC.' invd ON invd.invoice_id = inv.id where invd.item_id = id.item_id AND inv.so_id = id.sales_order_id group by inv.id) as invoice_id');
             $this->db->select('(select ic.id from '.ITEM_CAT.' ic LEFT JOIN '.ITEMS.' itm ON itm.item_category_id = ic.id where itm.id = id.item_id) as item_category');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = id.unit_uom_id)  as unit_abbreviation');
             $this->db->select('(select unit_abbreviation from '.ITEM_UOM.' where id = id.secondary_unit_uom_id)  as unit_abbreviation_2');
@@ -75,6 +76,7 @@ class Sales_order_items_model extends CI_Model
             $this->db->where('id.sales_order_id',$id);
             $this->db->where('id.deleted',0);
             $result = $this->db->get()->result_array();  
+//            echo $this->db->last_query(); die;    
             return $result;
 	}  
          public function get_transections($inv_id,$where=''){ 

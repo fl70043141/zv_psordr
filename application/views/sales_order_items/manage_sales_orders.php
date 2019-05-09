@@ -250,9 +250,9 @@ endswitch;
                                            <tr> 
                                                <th width="10%"  style="text-align: center;">Item Code</th> 
                                                <th width="6%" style="text-align: center;">Image</th> 
-                                               <th width="16%" style="text-align: center;">Item Name</th> 
+                                               <th width="16%" style="text-align: left;">Item Name</th> 
                                                <th width="16%" style="text-align: left;">Description</th> 
-                                               <th width="10%" style="text-align: center;">Quantity</th> 
+                                               <th width="10%" style="text-align: right;">Quantity</th> 
                                                <th width="15%" style="text-align: right;">Unit Cost (<?php echo $result['currency_code'];?>)</th>  
                                                <th width="15%" style="text-align: right;">Total</th> 
                                                <th  width="5%" style="text-align: center;">Action</th>
@@ -264,13 +264,14 @@ endswitch;
                                                 $so_total= 0;
                                                 if(isset($so_order_items)){
                                                     foreach ($so_order_items as $so_item){
-//                                                        echo '<pre>';                                                    print_r($so_data); 
+//                                                        echo '<pre>';                                                    print_r($so_item); 
+                                                        $invoiced = ($so_item['invoiced']==1)?'<br><span class="badge bg-green"><a style="color:white;" '.(($so_item['invoice_id']!='')? "href=".base_url('Sales_invoices/view/'.$so_item['invoice_id']):'').'>invoiced</a></span>':'';
                                                         echo '
                                                             <tr style="padding:10px" class="'.$row_count.'" id="tr_'.$row_count.'">
-                                                                <td><input hidden="" name="inv_items['.$row_count.'][item_code]" value="'.$so_item['item_code'].'">'.$so_item['item_code'].'</td>
+                                                                <td style="text-align:center;"><input hidden="" name="inv_items['.$row_count.'][item_code]" value="'.$so_item['item_code'].'">'.$so_item['item_code'].' '.$invoiced.'</td>
                                                                 <td  align="center"><img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$so_item['item_id'].'/'.$so_item['image']).'"></td>    
                                                                 <td><input hidden="" name="inv_items['.$row_count.'][item_desc]" value="'.$so_item['item_desc'].'"><input hidden="" name="inv_items['.$row_count.'][item_id]" value="'.$so_item['item_id'].'">'.$so_item['item_desc'].'</td>
-                                                                <td><input hidden="" name="inv_items['.$row_count.'][description]" value="'.$so_item['description'].'">'.$so_item['description'].'</td>
+                                                                <td style="text-align:center;"><input hidden="" name="inv_items['.$row_count.'][description]" value="'.$so_item['description'].'">'.$so_item['description'].'</td>
                                                                 <td  class="input_qty_td" align="right"><input class="input_qty_field" type="number" min="0" hidden="" name="inv_items['.$row_count.'][item_quantity]" value="'.$so_item['units'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_2]" value="'.$so_item['secondary_unit'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id]" value="'.$so_item['unit_uom_id'].'"><input hidden="" name="inv_items['.$row_count.'][item_quantity_uom_id_2]" value="'.$so_item['secondary_unit_uom_id'].'"><span class="qty_text">'.$so_item['units'].'</span> '.$so_item['unit_abbreviation'].' '.(($so_item['secondary_unit']>0)?'| '.$so_item['units'].' '.$so_item['unit_abbreviation_2']:'').'</td> 
                                                                 <td class="input_price_td" align="right"><input hidden class="input_price_field" type="number" min="0" step="0.01" name="inv_items['.$row_count.'][item_unit_cost]" value="'.$so_item['unit_price'].'"><span class="price_text">'. number_format($so_item['unit_price'],2).'</span></td>
                                                                 <td class="item_tots_td" align="right"><input class="item_tots" hidden="" name="inv_items['.$row_count.'][item_total]" value="'.$so_item['sub_total'].'"><span>'. number_format($so_item['sub_total'],2).'</span></td>

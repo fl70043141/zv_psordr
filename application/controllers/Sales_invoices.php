@@ -559,9 +559,9 @@ class Sales_invoices extends CI_Controller {
                                                             );
                 
                 if($inv_item['item_quantity_uom_id_2']!=0)
-                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],$inv_item['item_quantity_uom_id_2'],$inv_item['item_quantity_2']);
+                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],$inv_item['item_quantity_uom_id_2'],$inv_item['item_quantity_2'],'-',1);
                 else
-                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity']);
+                    $item_stock_data = $this->stock_status_check($inv_item['item_id'],$inputs['location_id'],$inv_item['item_quantity_uom_id'],$inv_item['item_quantity'],'',0,'-',1);
                 
                 if(!empty($item_stock_data)){
                     $data['item_stock'][] = $item_stock_data;
@@ -824,7 +824,7 @@ class Sales_invoices extends CI_Controller {
             return $data;
         }
         
-        function stock_status_check($item_id,$loc_id,$uom,$units=0,$uom_2='',$units_2=0,$calc='-'){ //updatiuon for item_stock table
+        function stock_status_check($item_id,$loc_id,$uom,$units=0,$uom_2='',$units_2=0,$calc='-',$is_order=0){ //updatiuon for item_stock table
             $this->load->model('Item_stock_model');
             $stock_det = $this->Item_stock_model->get_single_row('',"location_id = '$loc_id' and item_id = '$item_id'");
             $available_units= $available_units_2 = 0;
@@ -846,17 +846,29 @@ class Sales_invoices extends CI_Controller {
                 $available_units = $units;
                 $available_units_2 = $units_2;
             }else{
-                if($calc=='+'){
-                    $available_units = $stock_det['units_available'] + $units;
-                    $available_units_2 = $stock_det['units_available_2'] + $units_2;
+                if($is_order==0){ 
+                    if($calc=='+'){
+                        $available_units = $stock_det['units_available'] + $units;
+                        $available_units_2 = $stock_det['units_available_2'] + $units_2;
+                    }else{
+                        $available_units = $stock_det['units_available'] - $units;
+                        $available_units_2 = $stock_det['units_available_2'] - $units_2;
+                    }
                 }else{
-                    
-                    $available_units = $stock_det['units_available'] - $units;
-                    $available_units_2 = $stock_det['units_available_2'] - $units_2;
+                    if($calc=='+'){
+                        $units_on_demand = $stock_det['units_on_demand'] + $units;
+                        $units_on_demand_2 = $stock_det['units_on_demand_2'] + $units_2;
+                    }else{
+                        $units_on_demand = $stock_det['units_on_demand'] - $units;
+                        $units_on_demand_2 = $stock_det['units_on_demand_2'] - $units_2;
+                    }
                 }
             }
+            if($is_order==0){
                 $update_arr = array('location_id'=>$loc_id,'item_id'=>$item_id,'new_units_available'=>$available_units,'new_units_available_2'=>$available_units_2);
-                
+            }else{
+                $update_arr = array('location_id'=>$loc_id,'item_id'=>$item_id,'new_units_on_demand'=>$units_on_demand,'new_units_on_demand_2'=>$units_on_demand_2);
+            }
             return $update_arr;
         }
         

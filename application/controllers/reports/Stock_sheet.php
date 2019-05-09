@@ -18,7 +18,7 @@ class Stock_sheet extends CI_Controller {
 //            $data['search_list'] = $this->Sales_invoices_model->search_result();
             $data['main_content']='reports_all/inventory/stock_sheet/search_stock_sheet_report'; 
             $data['location_list'] = get_dropdown_data(INV_LOCATION,'location_name','id','Location');
-            $data['item_cat_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Gem Category','is_gem = 1');
+            $data['item_cat_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Category');
             
             $data['treatments_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','No Treatment','dropdown_id = 5'); //14 for treatments
             $data['shape_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','No Shape','dropdown_id = 16'); //16 for Shape
@@ -116,10 +116,12 @@ class Stock_sheet extends CI_Controller {
                                 <th align="left" colspan="6">'.$i.'. <u>'.$item_stocks['item_category_name'].'</u></th>
                             </tr>
                             <tr class="colored_bg">
-                                <th width="10%" align="center">#</th> 
-                                <th width="25%" align="center">Code</th> 
-                                <th width="35%" align="center">Desc</th> 
-                                <th width="30%" align="center" colspan="1">In Stock</th>
+                                <th width="5%" align="center">#</th> 
+                                <th width="20%" align="center">Code</th> 
+                                <th width="30%" align="center">Desc</th> 
+                                <th width="15%" align="center" colspan="1">Available</th>
+                                <th width="15%" align="center" colspan="1">On Order</th>
+                                <th width="15%" align="center" colspan="1">In Stock</th>
                             </tr> 
                         </thead>
                         <tbody>';
@@ -127,10 +129,12 @@ class Stock_sheet extends CI_Controller {
                        foreach ($item_stocks['item_list'] as $item){  
                                         if($item['units_available']>0 || $item['units_on_workshop']>0 || $item['units_on_consignee']>0){
                                            $html .= '<tr>
-                                                        <td width="10%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$j.'</td>
-                                                        <td width="25%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$item['item_code'].'</td>
-                                                        <td width="35%" align="center" style="border-right: 1px solid #cdd0d4;">'.$item['item_name'].'</td>
-                                                        <td width="30%" align="center" style="border-right: 1px solid #cdd0d4;" >'.$item['units_available'].' '.$item['uom_name'].(($item['uom_id_2']!=0)?' | '.$item['units_available_2'].' '.$item['uom_name_2']:'').'</td> 
+                                                        <td width="5%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$j.'</td>
+                                                        <td width="20%" align="center" style="border-right: 1px solid #cdd0d4;border-left: 1px solid #cdd0d4;">'.$item['item_code'].'</td>
+                                                        <td width="30%" align="center" style="border-right: 1px solid #cdd0d4;">'.$item['item_name'].'</td>
+                                                        <td width="15%" align="center" style="border-right: 1px solid #cdd0d4;" >'.$item['units_available'].' '.$item['uom_name'].(($item['uom_id_2']!=0)?' | '.$item['units_available_2'].' '.$item['uom_name_2']:'').'</td> 
+                                                        <td width="15%" align="center" style="border-right: 1px solid #cdd0d4;" >'.$item['units_on_demand'].' '.$item['uom_name'].(($item['uom_id_2']!=0)?' | '.$item['units_on_demand_2'].' '.$item['uom_name_2']:'').'</td> 
+                                                        <td width="15%" align="center" style="border-right: 1px solid #cdd0d4;" >'.($item['units_available']+$item['units_on_demand']).' '.$item['uom_name'].(($item['uom_id_2']!=0)?' | '.($item['units_available_2']+$item['units_on_demand']).' '.$item['uom_name_2']:'').'</td> 
 
                                                     </tr>';
                                            $j++;

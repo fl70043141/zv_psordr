@@ -164,7 +164,10 @@ class Sales_invoices_model extends CI_Model
                     foreach ($data['item_stock'] as $stock){
                         $this->db->where('location_id', $stock['location_id']);
                         $this->db->where('item_id', $stock['item_id']);
-                        $this->db->update(ITEM_STOCK, array('units_available'=>$stock['new_units_available'],'units_available_2'=>$stock['new_units_available_2']));
+                        if(isset($stock['new_units_on_demand']))
+                            $this->db->update(ITEM_STOCK, array('units_on_demand'=>$stock['new_units_on_demand'],'units_on_demand_2'=>$stock['new_units_on_demand_2']));
+                        if(isset($stock['units_available']))
+                            $this->db->update(ITEM_STOCK, array('units_available'=>$stock['new_units_available'],'units_available_2'=>$stock['new_units_available_2']));
                     }
                 }
                 
