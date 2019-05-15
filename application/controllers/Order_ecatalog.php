@@ -146,26 +146,40 @@ class Order_ecatalog extends CI_Controller {
         
         function search_items_page(){
             $input = $this->input->post();
-//            echo '<pre>';            print_r($input); die;
             $search_data=array(  
                                 'category_id' => ($input['item_category_id']==0)?'':$input['item_category_id'],  
                                 'item_code' => (isset($input['item_code']))?$input['item_code']:'',   
                                 'price_type_id' => $input['price_type_id'],   
                                 );
+//            echo '<pre>';            print_r($search_data); die;
             $cur_page = (isset($input['curr_page_no']) && $input['curr_page_no']>0)?$input['curr_page_no']:1 ;
             $page_limit_from = 9*($cur_page-1);
             $item_res = $this->Order_ecataog_modal->search_items($search_data,9,$page_limit_from); 
+//            echo '<pre>';            print_r($item_res); die;
             $data = array();
+            $exist_item = 0;
             if(!empty($item_res)){
                 foreach ($item_res as $item){ 
+                    if(isset($input['itm_id']) && $item['item_id']==$input['itm_id']){
+                        $exist_item=1;
+                    }
                     if($item['tot_units_1'] > 0){
                         $data['item_res'][$item['item_id']] = $item; 
                         $data['item_res'][$item['item_id']]['item_price_info'] = $this->Order_ecataog_modal->get_item_price($item['item_id'],$input['price_type_id']); 
                         $data['item_res'][$item['item_id']]['item_stock_info'] = $this->Order_ecataog_modal->get_item_stock($item['item_id']); 
                     }
                 }
+                if(isset($input['itm_id']) && $input['itm_id']!='' && $exist_item==0){    
+                    $item_exist = $this->Order_ecataog_modal->search_items(array('item_id'=>$input['itm_id']));
+                    if(!empty($item_exist)){
+                        $item_exist = $item_exist[0];
+                        $data['item_res'][$item_exist['item_id']] = $item_exist; 
+                        $data['item_res'][$item_exist['item_id']]['item_price_info'] = $this->Order_ecataog_modal->get_item_price($item_exist['item_id'],$input['price_type_id']); 
+                        $data['item_res'][$item_exist['item_id']]['item_stock_info'] = $this->Order_ecataog_modal->get_item_stock($item_exist['item_id']); 
+                    }
+                }
             }
-//                    echo '<pre>';            print_r($data); die;
+//                    echo '<pre>';            print_r($item_exist); die;
             $data['category_id1'] = $input['item_category_id'];
             $data['cur_page1'] = $cur_page;
             return $data;

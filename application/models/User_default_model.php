@@ -398,8 +398,8 @@ class User_default_model extends CI_Model
     
     
 //    private $url = "http://localhost/Fl_zv_softcheck/index.php/Fl_softwarelst/check_software_is_genuine/";
-    private $url = "http://fahrylafir.com/fl_soft_check/fl_zv_softcheck/Fl_softwarelst/";
-    private $conection_url = "www.fahrylafir.com";
+    private $url = "http://fahrylafir.website/fl_soft_check/fl_zv_softcheck/Fl_softwarelst/";
+    private $conection_url = "www.fahrylafir.website";
     
     public function zv_check_genuine(){ 
          

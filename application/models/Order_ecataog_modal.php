@@ -45,6 +45,7 @@ class Order_ecataog_modal extends CI_Model
             
             if(isset($data['category_id']) && $data['category_id']!='') $this->db->where('i.item_category_id',$data['category_id']);
             if(isset($data['item_code']) && $data['item_code']!='') $this->db->like('i.item_code',$data['item_code']);
+            if(isset($data['item_id']) && $data['item_id']!='') $this->db->where('i.id',$data['item_id']);
             if($limit!='') $this->db->limit($limit,$limit_from);
             $this->db->group_by('i.id');
             $result = $this->db->get()->result_array();  

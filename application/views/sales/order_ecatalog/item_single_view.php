@@ -101,7 +101,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
     
 //    $("#result_search_itm").html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Retrieving Data..');    
     var post_data = jQuery('#form_item_view').serializeArray(); 
-    post_data.push({name:"function_name",value:'get_items_for_view'}); 
+    post_data.push({name:"function_name",value:'get_items_for_view'},{name:"itm_id",value:item_id}); 
     $.ajax({
                     url: "<?php echo site_url($this->router->directory.$this->router->fetch_class().'/fl_ajax');?>", 
                     type: 'post',
