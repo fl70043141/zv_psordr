@@ -51,10 +51,10 @@ class Pdf extends TCPDF
         $this->SetFont('helvetica', 'I', 8);
         $this->SetTextColor(135,133,133);
         // Page number
-        $this->Cell(0, 0, 'Nveloop Gem Merchant System | +9477 1786 366 | www.nveloop.com |  info@nveloop.com ', 0, false, 'L', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 0, 'Solution by:       Zone Venture  Sri Lanka | +9477 1786 366 | www.zoneventure.com |  info@zoneventure.com ', 0, false, 'L', 0, '', 0, false, 'T', 'M');
         $this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         $image_zv = DEFAULT_IMAGE_LOC.'small_zv.png';
-//        $this->Image($image_zv, 31, 290, 4, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        $this->Image($image_zv, 26, 286, 4, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         
 
     }
@@ -181,7 +181,7 @@ class Pdf extends TCPDF
                                 <td style="height:50px;" align="right">'.$this->fl_header_title_RTOP.'</td>
                             </tr>   
                             <tr>
-                                <td style="height:35px;" align="right"><img src="'. base_url(DEFAULT_IMAGE_LOC.'gema.png').'"></td>
+                                <td style="height:35px;" align="right"></td>
                             </tr>   
                             <tr>
                                 <td style="height:30px; font-size:25px;" align="right"><b>'.$this->fl_header_title.'</b></td>

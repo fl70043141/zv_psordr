@@ -671,7 +671,7 @@ class Sales_order_items extends CI_Controller {
             $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
             // set margins
-            $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+            $pdf->SetMargins(10, 50, 10);
             $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
             $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -694,10 +694,14 @@ class Sales_order_items extends CI_Controller {
             $html = '<table>
                         <tr>
                             <td>Order Date: '.date('m/d/Y',$inv_dets['order_date']).'</td>
-                            <td align="right">Required Date: '.date('m/d/Y',$inv_dets['required_date']).'</td> 
+                            <td align="right">Order #: '.$inv_dets['sales_order_no'].' </td> 
+                        </tr>
+                        <tr>
+                            <td>Required Date: '.date('m/d/Y',$inv_dets['required_date']).'</td>
+                            <td align="right"></td> 
                         </tr>
                         <tr> 
-                            <td colspan="2" align="center"><h1>Sales Order</h1></td>
+                            <td colspan="2" align="center"></td>
                         </tr>  
                         <tr>
                             <td>Sold to: '.$inv_dets['customer_name'].'</td>
