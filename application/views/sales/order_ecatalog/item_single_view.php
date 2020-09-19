@@ -217,6 +217,13 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
 //                             }); 
                             if(typeof (item_list) != 'undefined'){
                              $('.add-to-cart').click(function(){
+
+                                 
+                                // Loading until back-end progress
+                                add_btn_id = this.id;
+                                $('#'+add_btn_id).attr('disabled', 'disabled');
+                                $('#'+add_btn_id).html('<span class="fa fa-spinner fa-pulse"></span> Adding');
+                                
                                 var add_item_id = (this.id).split("_")[0];
 
                                 var unit_price = parseFloat($('#'+add_item_id+'_amountinpt').val());
@@ -240,7 +247,15 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                             success: function(result1){   
 //                                                alert(result1)
                                                 if(result1=='1'){
-                                                    fl_alert('success','Item Successfully added to order.');
+                                                    
+                                                    $('#'+add_btn_id).html('<span id="temp_msg_'+add_btn_id+'" class="fa  fa-check-circle">  Added</span>.');
+                                                    $(document).ready(function() {
+                                                        $('#temp_msg_'+add_btn_id).delay(1000).fadeOut(1000,function(){
+                                                            $('#'+add_btn_id).removeAttr('disabled');
+                                                            $('#'+add_btn_id).text('ADD TO ORDER');
+                                                        });
+                                                    }); 
+                                                    // fl_alert('success','Item Successfully added to order.');
 //                                                    $('#msgs').html('<div class="alert alert-success msg_err"> <a class="close" data-dismiss="alert" href="#">&times;</a>  <i class="fa fa-check-circle"></i>&nbsp; Item Successfully added to order  </div>')
                                                 }else{
                                                     fl_alert('danger','Error! Something went wrong!');

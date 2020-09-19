@@ -177,7 +177,7 @@
                                             echo '
                                                     <div class="item image-grid__item no-padding">
                                                         <div class="thumbnail">
-                                                            <img class="group list-group-image img-bordered-sm" style="width:400px;" src="'.base_url(ITEM_IMAGES.(($item['image']!='')?$item['item_id'].'/'.$item['image']:'../default/default.jpg')).'" alt="" />
+                                                            <a target="_blank" href="'.base_url($this->router->fetch_class().'/view_item/'.$item['item_id'].'/'.(($category_id1!='')?$category_id1:0).'_'.$order_id.'_'.$price_type_id1.'/'.$cur_page1).'" ><img class="group list-group-image img-bordered-sm" style="width:400px;" src="'.base_url(ITEM_IMAGES.(($item['image']!='')?$item['item_id'].'/'.$item['image']:'../default/default.jpg')).'" alt="" /></a>
                                                             <div class="caption" >
                                                                 <h4 class="group inner list-group-item-heading" style="text-align:center;"> '.$item['item_code'].' |  '.$item['item_name'].'</h4>
                                                                 <div class="row">
