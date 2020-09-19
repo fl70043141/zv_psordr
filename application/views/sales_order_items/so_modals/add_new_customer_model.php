@@ -113,6 +113,9 @@
                 $('#new_customer_city').focus().select();
                 return false;
             }
+            // Loading until back-end progress
+            $('#confirm_add_cust').attr('disabled', 'disabled');
+            $('#confirm_add_cust').html('<span class="fa fa-spinner fa-pulse"></span> Adding');
             add_customer_modal(); 
         });
         
@@ -154,6 +157,10 @@
                                     $('#customer_id').select2();  
                                     $('#add_new_customer_model').modal('toggle'); 
                                     $('#customer_id').val(result).change();  
+
+                                    
+                                    $('#confirm_add_cust').removeAttr('disabled');
+                                    $('#confirm_add_cust').text('Add new');
                                 }else{  
                                     fl_alert('info',"Something went wrong!");
                                 }

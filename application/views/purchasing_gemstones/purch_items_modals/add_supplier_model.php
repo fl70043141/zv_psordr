@@ -107,6 +107,10 @@
                 $('#city').focus().select();
                 return false;
             }
+            
+            // Loading until back-end progress
+            $('#confirm_add_supp').attr('disabled', 'disabled');
+            $('#confirm_add_supp').html('<span class="fa fa-spinner fa-pulse"></span> Adding');
             add_supplier_modal(); 
         });
         
@@ -140,6 +144,10 @@
                                     $('#supplier_id').select2();  
                                     $('#supplier_id').val(result).change();
                                     $('#add_supplier_model').modal('toggle'); 
+
+                                    
+                                    $('#confirm_add_supp').removeAttr('disabled');
+                                    $('#confirm_add_supp').text('Add new');
                                 }else{  
                                     fl_alert('info',"Something went wrong!");
                                 }
