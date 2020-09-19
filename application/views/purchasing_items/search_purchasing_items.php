@@ -21,7 +21,7 @@ $(document).ready(function(){
 	function get_results(){
         $("#result_search").html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Retrieving Data..');    
         $.ajax({
-			url: "<?php echo site_url('Purchasing_invoices/search');?>",
+			url: "<?php echo site_url('Purchasing_items/search');?>",
 			type: 'post',
 			data : jQuery('#form_search').serializeArray(),
 			success: function(result){

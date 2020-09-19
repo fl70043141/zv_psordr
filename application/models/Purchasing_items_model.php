@@ -17,7 +17,7 @@ class Purchasing_items_model extends CI_Model
             $this->db->join(SUPPLIERS.' c','c.id = i.supplier_id'); 
             $this->db->join(PAYMENT_TERMS.' pt','pt.id = i.payment_term_id'); 
             $this->db->where('i.deleted',0);
-            if(isset($data['supp_invoice_no']) && $data['item_code']!='') $this->db->like('i.supplier_invoice_no',$data['supp_invoice_no']);
+            if(isset($data['supp_invoice_no']) && $data['supp_invoice_no']!='') $this->db->like('i.supplier_invoice_no',$data['supp_invoice_no']);
             if(isset($data['supplier_id']) && $data['supplier_id']!='') $this->db->where('i.supplier_id',$data['supplier_id']);
             if(isset($data['item_code']) && $data['item_code']!='') $this->db->like('itm.item_code',$data['item_code']);
             $this->db->group_by('i.id');
@@ -178,6 +178,8 @@ class Purchasing_items_model extends CI_Model
 		$this->db->insert(ITEMS, $data['item']);   
 		$this->db->insert(ITEM_PRICES, $data['purchase_price']); 
 		$this->db->insert(ITEM_PRICES, $data['standard_price']); 
+                
+                if(isset($data['sale_price'])) $this->db->insert(ITEM_PRICES, $data['sale_price']); 
                 
 		$status[0]=$this->db->trans_complete();
 		$status[1]=$data['item']['id']; 

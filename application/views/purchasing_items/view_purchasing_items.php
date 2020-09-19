@@ -150,7 +150,7 @@ $inv_trans = $inv_data['inv_transection'];
                      foreach ($inv_itms as $inv_itm){
                          echo     '<tr>
                                         <td width="15%">'.$inv_itm['purchasing_unit'].' '.$inv_itm['unit_abbreviation'].(($inv_itm['secondary_unit_uom_id']>0)?' | '.$inv_itm['secondary_unit'].' '.$inv_itm['unit_abbreviation_2']:'').'</td> 
-                                        <td width="15%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                        <td width="15%" style="text-align: left;"><a href="'.base_url('/Items/edit/'.$inv_itm['item_id']).'">'.$inv_itm['item_code'].'</a></td>  
                                         <td width="35%" style="text-align: left;">'.$inv_itm['supplier_item_desc'].'</td>  
                                         <td width="15%" style="text-align: right;">'. number_format($inv_itm['purchasing_unit_price'],2).'</td> 
                                         <td width="19%" style="text-align: right;">'. number_format($inv_itm['sub_total'],2).'</td> 
