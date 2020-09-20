@@ -88,7 +88,7 @@ function get_results(){
                                    </div> 
                             </div> 
                             
-                            <div class="col-md-3">  
+                            <div hidden class="col-md-3">  
                                     <div class="form-group pad  no-pad-top">
                                         <label for="price_type_id">Price:</label>
                                          <?php  echo form_dropdown('price_type_id',$sales_type_list,set_value('price_type_id'),' class="form-control " data-live-search="true" id="price_type_id"');?>

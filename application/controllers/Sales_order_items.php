@@ -720,10 +720,11 @@ class Sales_order_items extends CI_Controller {
                                 <thead> 
                                     <tr style="">
                                          <th width="12%" style="text-align: left;"><u><b>NL NO</b></u></th>  
+                                         <th width="09%" style="text-align: left;"><u><b>Image</b></u></th>  
                                          <th width="35%" style="text-align: left;"><u><b>Description</b></u></th>  
-                                         <th  width="10%"><u><b>Qty</b></u></th> 
-                                         <th width="23%" style="text-align: right;"><u><b>Rate</b></u></th> 
-                                          <th width="20%" style="text-align: right;"><u><b>Total</b></u></th> 
+                                         <th width="08%" ><u><b>Qty</b></u></th> 
+                                         <th width="18%" style="text-align: right;"><u><b>Rate</b></u></th> 
+                                         <th width="18%" style="text-align: right;"><u><b>Total</b></u></th> 
                                      </tr>
                                 </thead>
                             <tbody>';
@@ -731,10 +732,11 @@ class Sales_order_items extends CI_Controller {
                      foreach ($inv_desc as $inv_itm){
                          $html .= '<tr>
                                         <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                        <td width="09%" style="text-align: left;"><img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$inv_itm['item_id'].'/'.$inv_itm['image']).'"></td>    
                                         <td width="35%" style="text-align: left;">'.$inv_itm['item_desc'].'</td> 
-                                        <td width="10%">'.$inv_itm['units'].'</td>  
-                                        <td width="23%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
-                                         <td width="20%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
+                                        <td width="08%" >'.$inv_itm['units'].'</td>  
+                                        <td width="18%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
+                                        <td width="18%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
                                     </tr> ';
                          $order_total+=$inv_itm['sub_total'];
                      } 

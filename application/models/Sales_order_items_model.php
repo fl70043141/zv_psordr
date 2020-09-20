@@ -19,7 +19,7 @@ class Sales_order_items_model extends CI_Model
             $this->db->where('i.deleted',0);
             if(isset($data['sales_order_no'])) $this->db->like('i.sales_order_no',$data['sales_order_no']);
             if(isset($data['customer_id']) && $data['customer_id']!='') $this->db->where('i.customer_id',$data['customer_id']);
-            
+            $this->db->order_by('i.id','desc');
             $result = $this->db->get()->result_array();  
 //            echo $this->db->last_query();die;
             return $result;
