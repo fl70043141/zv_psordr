@@ -10,7 +10,7 @@ class Order_ecatalog extends CI_Controller {
         }
 
         public function index($so_id=''){
-            $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Categories');
+            $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','All Categories');
             $data['sales_type_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','','dropdown_id = 14'); //14 for sales type
             
             $data['order_id'] = $so_id;
@@ -20,7 +20,7 @@ class Order_ecatalog extends CI_Controller {
         
         public function item_list($cat_id="", $page_no='1'){
             $cat_arr = explode('_',$cat_id); 
-            $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','No Categories');
+            $data['category_list'] = get_dropdown_data(ITEM_CAT,'category_name','id','All Categories');
             $data['sales_type_list'] = get_dropdown_data(DROPDOWN_LIST,'dropdown_value','id','','dropdown_id = 14'); //14 for sales type
             
             $data['category_id'] = $cat_arr[0];

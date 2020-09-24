@@ -127,7 +127,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                                                      '<div class=" row">'+
                                                                       '<div class="col-md-12 bg-gray " style="padding: 20px 0 20px; ">';
 
-                                                                        content += '<div class="preview col-md-6">'+
+                                                                        content += '<div class="preview col-md-8">'+
                                                                                                   '<div class="preview-pic tab-content">'+
                                                                                                     '<div class="tab-pane active" id="'+item_obj.item_id+'-pic-1"><img style="width:'+(window.innerWidth)+'px;"  src="'+img_dir+item_obj.item_id+'/'+((item_obj.image!="")?item_obj.image:'../../default/default.jpg')+'" /></div>';
                                                                                 var i=2;
@@ -152,7 +152,7 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                                                         content += '</ul>'+
 
                                                                                 '</div>'+
-                                                                                '<div class="details col-md-6">'+
+                                                                                '<div class="details col-md-4">'+
                                                                                         '<h3 class="product-title">Code: '+item_obj.item_code+'</h3> '+
                                                                                         '<h4 class="product-title">Name: '+item_obj.item_name+'</h4>'+
                                                                                         ((item_obj.is_gem == 0)?'<h5 class="product-title">Category: '+item_obj.category_name+'</h5>':'')+'';
@@ -166,14 +166,14 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                                                         }
 
                                                                             content +=  '<h3 class="price">Price: <span>'+((typeof(item_obj.item_price_info.currency_code) != 'undefined')?item_obj.item_price_info.currency_code:'')+' '+ ((typeof(item_obj.item_price_info.price_amount) != 'undefined')?parseFloat(item_obj.item_price_info.price_amount).toFixed(2):'--')+'</span></h3>'+
-                                                                                         '<input  id="'+item_obj.item_id+'_amountinpt" name="item_tmp['+item_obj.item_id+'][unit_price]" type="number" min="0" value="'+((typeof(item_obj.item_price_info.price_amount) != 'undefined')?item_obj.item_price_info.price_amount:'0')+'" class="form-group input-lg col-sm-8 col-xs-8 amount_inpt">'+
+                                                                                         '<input  id="'+item_obj.item_id+'_amountinpt" name="item_tmp['+item_obj.item_id+'][unit_price]" type="number" min="0" value="'+((typeof(item_obj.item_price_info.price_amount) != 'undefined')?item_obj.item_price_info.price_amount:'0')+'" class="form-group input-lg col-sm-11 col-xs-11 amount_inpt">'+
                                                                                          '<h4 class="price">Available: <span>'+item_obj.item_stock_info.tot_units_1+' '+item_obj.unit_abbreviation+((parseFloat(item_obj.item_stock_info.tot_units_2)>0)?'  |  '+item_obj.item_stock_info.tot_units_2+' '+item_obj.unit_abbreviation_2:'')+'</span></h4>'+
 
                                                                                          '<div class="quantity buttons_added row pad" >'+
-                                                                                                  '<input type="button" value="-" class="minus btn btn-lg bg-red-gradient col-sm-2 col-xs-2">'+
-                                                                                                  '<input id="'+item_obj.item_id+'_qtyinpt" name="item_tmp['+item_obj.item_id+'][units]" type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" class="col-xs-4 col-sm-4 input-text qty text form-group input-lg" size="6" pattern="" inputmode="">'+
+                                                                                                  '<input type="button" value="-" class="minus btn btn-lg bg-red-gradient col-sm-3 col-xs-3">'+
+                                                                                                  '<input id="'+item_obj.item_id+'_qtyinpt" name="item_tmp['+item_obj.item_id+'][units]" type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" class="col-xs-6 col-sm-6 input-text qty text form-group input-lg" size="6" pattern="" inputmode="">'+
                                                                                                   '<input hidden id="'+item_obj.item_id+'_itemidinpt" type="text" name="item_tmp['+item_obj.item_id+'][item_id]" value="'+item_obj.item_id+'">'+
-                                                                                                  '<input type="button" value="+" class="plus btn btn-lg bg-green-gradient col-sm-2 col-xs-2">'+
+                                                                                                  '<input type="button" value="+" class="plus btn btn-lg bg-green-gradient col-sm-3 col-xs-3">'+
                                                                                           '</div>'+
                                                                                          '<div class="action row">'+
                                                                                                     '<div class="col-md-6 col-xs-6 col-sm-6"> <a onclick="window.close()"class="like btn btn-default  btn-block" type="button"><span class="fa fa-backward"></span> Back</a> </div>'+
