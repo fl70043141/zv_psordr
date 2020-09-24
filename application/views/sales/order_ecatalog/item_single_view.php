@@ -139,11 +139,11 @@ function load_item_info(item_id,init_id = 0,type='A',slideTo=true){ // A: append
                                                                                 } 
                                                                             content +=   '</div>'+
                                                                                             '<ul class="preview-thumbnail nav nav-tabs">'+
-                                                                                              '<li class="active"><a data-target="#'+item_obj.item_id+'-pic-1" data-toggle="tab"><img id="'+item_obj.item_id+'-img-1"  src="'+img_dir+item_obj.item_id+'/'+((item_obj.image!="")?item_obj.image:'../../default/default.jpg')+'"  class="tmb-img"/></a></li>';
+                                                                                              '<li class="active"><a data-target="#'+item_obj.item_id+'-pic-1" data-toggle="tab"><img style="width:100%;height:8vw;" id="'+item_obj.item_id+'-img-1"  src="'+img_dir+item_obj.item_id+'/'+((item_obj.image!="")?item_obj.image:'../../default/default.jpg')+'"  class="tmb-img"/></a></li>';
                                                                             var j=2;
                                                                             if(otr_images.length > 0){
                                                                                 $.each(otr_images, function (key, otr_img_name_tmb) {
-                                                                                    content +=   '<li><a data-target="#'+item_obj.item_id+'-pic-'+j+'" data-toggle="tab"><img id="'+item_obj.item_id+'-img-'+j+'" src="'+img_dir+item_obj.item_id+'/other/'+otr_img_name_tmb+'" class="tmb-img"/></a></li>';
+                                                                                    content +=   '<li><a data-target="#'+item_obj.item_id+'-pic-'+j+'" data-toggle="tab"><img style="width:100%;height:8vw;" id="'+item_obj.item_id+'-img-'+j+'" src="'+img_dir+item_obj.item_id+'/other/'+otr_img_name_tmb+'" class="tmb-img"/></a></li>';
                                                                                     j++;
                                                                                 });
                                                                                 }
