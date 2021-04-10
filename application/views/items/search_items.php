@@ -132,7 +132,7 @@ $(document).ready(function(){
                                         <div class="col-md-7">                                            
                                             <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-search"></span></span>
-                                                <?php echo form_input('row_limit', set_value('row_limit',50), 'id="row_limit" class="form-control" placeholder="row_limit"'); ?>
+                                                <?php echo form_input('row_limit', set_value('row_limit',100), 'id="row_limit" class="form-control" placeholder="row_limit"'); ?>
 
                                             </div>                                             
                                         </div>

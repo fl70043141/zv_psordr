@@ -48,6 +48,6 @@
 <script>
     $(document).ready(function() {
    
-  $(".dataTable11").DataTable({"scrollX": true });
+  $(".dataTable11").DataTable({"scrollX": true ,"pageLength": 25});
 } );
 </script>
