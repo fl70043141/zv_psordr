@@ -108,21 +108,56 @@ if ( ! function_exists('get_autoincrement_no'))
             $serial = ($serial == 0) ? 1 : $serial+1;
             return $serial;
     }
-    
+  
 // single row
-    function get_single_row_helper($table='', $where=''){
-            $CI =& get_instance();
-            $CI->db->select("*");	
-            $CI->db->from($table);
-            if($where!='')$CI->db->where($where);
-                    
-            $res = $CI->db->get()->result_array();	
-            
-            if(!empty($res)) return $res[0];
-            
-            return $res;
+function get_single_row_helper($table='', $where='', $order_by='', $select_fields=array()){
+    $CI =& get_instance();
+    $CI->db->select("*");		
+    if(!empty($select_fields)){
+        foreach($select_fields as $select_field){
+            $CI->db->select($select_field);
+        }
     }
+    $CI->db->from($table);
+    if($where!='')$CI->db->where($where);
+    if($order_by!=''){
+        $first_char_order_by = $order_by[0];
+        if($first_char_order_by=='-')
+            $CI->db->order_by(substr($order_by,1),'desc');
+        else
+            $CI->db->order_by($order_by,'asc');
+    }
+    $res = $CI->db->get()->result_array();	
     
+    if(!empty($res)) return $res[0];
+    
+    return $res;
+}
+
+// List row
+function get_list_row_helper($table='', $where='', $order_by='', $select_fields=array()){
+    $CI =& get_instance();
+    $CI->db->select("*");	
+    if(!empty($select_fields)){
+        foreach($select_fields as $select_field){
+            $CI->db->select($select_field);
+        }
+    }
+    $CI->db->from($table);
+    if($where!='')$CI->db->where($where);
+    if($order_by!=''){
+        $first_char_order_by = $order_by[0];
+        if($first_char_order_by=='-')
+            $CI->db->order_by(substr($order_by,1),'desc');
+        else
+            $CI->db->order_by($order_by,'asc');
+    }
+            
+    $res = $CI->db->get()->result_array();	
+    
+    return $res;
+}
+
 if ( ! function_exists('gen_id'))
 {
 // generate id
