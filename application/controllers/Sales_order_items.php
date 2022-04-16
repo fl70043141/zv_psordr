@@ -720,7 +720,7 @@ class Sales_order_items extends CI_Controller {
                                 <thead> 
                                     <tr style="">
                                          <th width="12%" style="text-align: left;"><u><b>NL NO</b></u></th>  
-                                         <th width="09%" style="text-align: left;"><u><b>Image</b></u></th>  
+                                         <th width="09%" style="text-align: center;"><u><b>Image</b></u></th>  
                                          <th width="35%" style="text-align: left;"><u><b>Description</b></u></th>  
                                          <th width="08%" ><u><b>Qty</b></u></th> 
                                          <th width="18%" style="text-align: right;"><u><b>Rate</b></u></th> 
@@ -730,9 +730,16 @@ class Sales_order_items extends CI_Controller {
                             <tbody>';
                      $order_total = 0;
                      foreach ($inv_desc as $inv_itm){
+
+                        $image_html = "-";
+                        // Check if file exists
+                        if(file_exists(ITEM_IMAGES.$inv_itm['item_id'].'/'.$inv_itm['image'])){
+                            $image_html = '<img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$inv_itm['item_id'].'/'.$inv_itm['image']).'">';
+                        }
+
                          $html .= '<tr>
                                         <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
-                                        <td width="09%" style="text-align: left;"><img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$inv_itm['item_id'].'/'.$inv_itm['image']).'"></td>    
+                                        <td width="09%" style="text-align: center;">'.$image_html.'</td>    
                                         <td width="35%" style="text-align: left;">'.$inv_itm['item_desc'].'</td> 
                                         <td width="08%" >'.$inv_itm['units'].'</td>  
                                         <td width="18%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
