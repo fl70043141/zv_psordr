@@ -38,7 +38,7 @@
       </div> 
       <div class="modal-body form-horizontal">
             <div class="box-body">
-              <div class="form-group">
+              <div hidden class="form-group">
                 <label for="new_customer_type_id" class="col-sm-3 control-label">Customer Type</label>
                 <div class="col-sm-9"> 
                     <?php  echo form_dropdown('new_customer_type_id',$customer_type_list,set_value('new_customer_type_id','LK'),'style="width:100%" class="form-control input-lg select2" data-live-search="true" id="new_customer_type_id"');?> 
@@ -71,7 +71,7 @@
               <div class="form-group">
                 <label for="new_customer_country_code" class="col-sm-3 control-label">Country</label>
                 <div class="col-sm-9"> 
-                    <?php  echo form_dropdown('new_customer_country_code',$country_list,set_value('new_customer_country_code','LK'),'style="width:100%" class="form-control input-lg select2" data-live-search="true" id="new_customer_country_code"');?> 
+                    <?php  echo form_dropdown('new_customer_country_code',$country_list,set_value('new_customer_country_code','GB'),'style="width:100%" class="form-control input-lg select2" data-live-search="true" id="new_customer_country_code"');?> 
                 </div>
               </div>  
                 <div id="res_op_mod1"></div>

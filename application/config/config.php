@@ -24,8 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] =  "http://".$_SERVER['HTTP_HOST'].'/zv_ordermanager/';
-//$config['base_url'] =  "https://".$_SERVER['HTTP_HOST'].'/hotel_site/'; // ssl
+$config['base_url'] =  "http://".$_SERVER['HTTP_HOST'].'/';
 date_default_timezone_set('Asia/Colombo');
 /*
 |--------------------------------------------------------------------------

@@ -23,13 +23,13 @@ defined('SHOW_DEBUG_BACKTRACE') OR define('SHOW_DEBUG_BACKTRACE', TRUE);
 | of this setting
 |
 */
-define('SYSTEM_NAME', 'NVELOOP GEMS');
-define('SYSTEM_CODE', 'ZV_ORDER_MNG_DEV1');
-define('SYSTEM_SHOTR_NAME', 'NV GEMS');
-define('SYSTEM_POWERED_BY', 'Nveloop Solution');
+define('SYSTEM_NAME', 'NEXTLOOK ORDER');
+define('SYSTEM_CODE', 'ZV_ORDER_MNG_DEMO1');
+define('SYSTEM_SHOTR_NAME', 'NV ORDER');
+define('SYSTEM_POWERED_BY', 'Zone Venture');
 define('SYS_DATE_FORMAT', 'm/d/Y');
 define('NO_GEM', '0'); //jewelry only ->1
-define('SYS_EXP', '2019-06-30 23:58'); //jewelry only ->1
+define('SYS_EXP', '2024-06-30 23:58'); //jewelry only ->1
 
 define('INVOICE_NO_PREFIX', 'NI'. date('my'));
 define('TEMP_INVOICE_NO_PREFIX', 'TMP');
