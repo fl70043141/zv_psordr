@@ -174,12 +174,14 @@
                                     if(!empty($item_res) && isset($item_res)){
                                         foreach ($item_res as $item){
 //                                            echo '<pre>';print_r($item); die;
+                                            $codename = (trim($item['item_code']." | ".$item['item_name']));
+                                            $corrected_item_codename = (strlen(trim($codename))>42)?substr($codename,0,40)."...":$codename;
                                             echo '
                                                     <div class="item image-grid__item no-padding">
                                                         <div class="thumbnail">
-                                                            <a target="_blank" href="'.base_url($this->router->fetch_class().'/view_item/'.$item['item_id'].'/'.(($category_id1!='')?$category_id1:0).'_'.$order_id.'_'.$price_type_id1.'/'.$cur_page1).'" ><img class="group list-group-image img-bordered-sm" style="width:400px;" src="'.base_url(ITEM_IMAGES.(($item['image']!='')?$item['item_id'].'/'.$item['image']:'../default/default.jpg')).'" alt="" /></a>
+                                                            <a target="_blank" href="'.base_url($this->router->fetch_class().'/view_item/'.$item['item_id'].'/'.(($category_id1!='')?$category_id1:0).'_'.$order_id.'_'.$price_type_id1.'/'.$cur_page1).'" ><img class="group list-group-image img-bordered-sm" style="width:100vw;height:25vw;" src="'.base_url(ITEM_IMAGES.(($item['image']!='')?$item['item_id'].'/'.$item['image']:'../default/default.jpg')).'" alt="" /></a>
                                                             <div class="caption" >
-                                                                <h4 class="group inner list-group-item-heading" style="text-align:center;"> '.$item['item_code'].' |  '.$item['item_name'].'</h4>
+                                                                <p class="group inner list-group-item-heading" style="text-align:center;font-size:1.1vw;"> '.$corrected_item_codename.'</p>
                                                                 <div class="row">
                                                                     <div class="col-xs-12 col-md-12">
                                                                         <p class=""  style="text-align:center;">Price '.((!empty($item['price_info']))?$item['price_info']['currency_code'].' '.$item['price_info']['price_amount']:'-').'</p>

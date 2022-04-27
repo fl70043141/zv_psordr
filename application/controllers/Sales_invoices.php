@@ -1241,13 +1241,22 @@ class Sales_invoices extends CI_Controller {
                                         $is_item_stat++;
                                     }
                                     if($inv_itm['is_gem']==0){
-                                        $item_list_html .= '<tr>
-                                                       <td width="33%" style="text-align: left;">'.$inv_itm['item_description'].'</td> 
-                                                       <td width="12%" style="text-align: left;">'.$inv_itm['item_cat_name'].'</td>  
-                                                       <td width="12%">'.$inv_itm['item_code'].'</td>  
-                                                       <td width="23%" style="text-align: center;">'.$inv_itm['item_quantity'].' '.$inv_itm['unit_abbreviation'].'</td> 
-                                                       <td width="20%" style="text-align: right;"> '. number_format($inv_itm['sub_total'],2).'</td> 
-                                                   </tr> ';
+                                                                    //    echo '<pre>';         print_r($inv_itm); die;
+                                        $item_info = get_single_row_helper(ITEMS, 'id='.$inv_itm['item_id']);
+                                        $image_html = "-";
+                                        // Check if file exists
+                                        if(file_exists(ITEM_IMAGES.$inv_itm['item_id'].'/'.$item_info['image'])){
+                                            $image_html = '<img class="thumbnail" style="width:30px;height:30px;" src="'. base_url(ITEM_IMAGES.$inv_itm['item_id'].'/'.$item_info['image']).'">';
+                                        }
+                
+                                         $item_list_html .= '<tr>
+                                                        <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
+                                                        <td width="09%" style="text-align: center;">'.$image_html.'</td>    
+                                                        <td width="35%" style="text-align: left;">'.$inv_itm['item_description'].'</td> 
+                                                        <td width="08%" >'.number_format($inv_itm['item_quantity']).'</td>  
+                                                        <td width="18%" style="text-align: right;">'.$cur_det['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
+                                                        <td width="18%" style="text-align: right;">'.$cur_det['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
+                                                    </tr> ';
                                         $inv_tot+=$inv_itm['sub_total'];
                                     }
                                     if($inv_itm['is_gem']==1){
@@ -1273,13 +1282,14 @@ class Sales_invoices extends CI_Controller {
                                     $html .='
                                                 <table id="example1" class="table-line" border="0">
                                                     <thead> 
-                                                        <tr style=""> 
-                                                            <th width="33%" style="text-align: left;"><u><b>Article Description</b></u></th>  
-                                                            <th width="12%" style="text-align: left;"><u><b>Category</b></u></th>  
-                                                            <th width="12%" style="text-align: left;"><u><b>Item code</b></u></th> 
-                                                            <th  width="23%" style="text-align: center;" ><u><b>Weight</b></u></th>  
-                                                            <th width="20%" style="text-align: right;"><u><b>Price ('.$cur_det['symbol_left'].')</b></u></th> 
-                                                         </tr>
+                                                    <tr style="">
+                                                         <th width="12%" style="text-align: left;"><u><b>NL NO</b></u></th>  
+                                                         <th width="09%" style="text-align: center;"><u><b>Image</b></u></th>  
+                                                         <th width="35%" style="text-align: left;"><u><b>Description</b></u></th>  
+                                                         <th width="08%" ><u><b>Qty</b></u></th> 
+                                                         <th width="18%" style="text-align: right;"><u><b>Rate</b></u></th> 
+                                                         <th width="18%" style="text-align: right;"><u><b>Total</b></u></th> 
+                                                     </tr>
                                                     </thead>
                                                 <tbody>';
                                     $html .= $item_list_html;
@@ -1497,7 +1507,7 @@ class Sales_invoices extends CI_Controller {
             foreach ($item_cats as $cat_key=>$cay_name){ 
 //                    echo '<pre>';                    print_r($invoice_desc); die;
                 foreach ($invoice_desc as $invoice_itm){
-                    $item_info = $this->Items_model->get_single_row($invoice_itm['item_id'])[0];
+                    $item_info = get_single_row_helper(ITEMS,'id='.$invoice_itm['item_id']);
                     $invoice_itm['item_code']=$item_info['item_code'];
                     if($invoice_itm['item_category']==$cat_key){
                         $data['invoice_desc'][$cat_key][]=$invoice_itm;

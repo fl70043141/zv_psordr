@@ -237,6 +237,55 @@ class Pdf extends TCPDF
         
     }
     
+    public function header_order() {
+        $CI =& get_instance();
+        $CI->load->model('Company_model');
+        $company_dets = $CI->Company_model->get_single_row($_SESSION[SYSTEM_CODE]['company_id']);
+//        echo '<pre>'; print_r($company_dets); die;
+        $header_info = '';
+        $header_right_info = '<table border=""> 
+                            <tr>
+                                <td style="height:50px;" align="right">'.$this->fl_header_title_RTOP.'</td>
+                            </tr>   
+                            <tr>
+                                <td style="height:35px;" align="right"></td>
+                            </tr>   
+                            <tr>
+                                <td style="height:30px; font-size:25px;" align="right"><b>'.$this->fl_header_title.'</b></td>
+                            </tr>   
+                        </table> ';
+         
+        
+        $image_file = COMPANY_LOGO.$company_dets[0]['logo'];
+        $this->Image($image_file, 9, 10, '', 20, 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+         
+        
+        $this->SetTextColor(48,75,105);
+        $fontname = TCPDF_FONTS::addTTFfont('storage/fonts/CanelaBarkBold_PERSONAL.ttf', 'TrueTypeUnicode', '', 96);
+        // use the font
+        // $this->SetFont($fontname, '', 35, '', false);
+        // $this->SetTextColor(48,75,105);
+        // $this->Text('78', 9, $company_dets[0]['company_name'], false, false, true, 0, 0, 'center', false,'',1);
+        
+        $this->SetTextColor(96,96,96);
+        $fontname = TCPDF_FONTS::addTTFfont('storage/fonts/Lato-Light.ttf', 'TrueTypeUnicode', '', 96);
+        $this->SetFont($fontname, 'I', 10.5);
+        $this->writeHTMLCell(90,20,60,23,$header_info); 
+        
+        $this->writeHTMLCell(45,20,155,9,$header_right_info); 
+        
+         //water_mark 
+        $image_file = DEFAULT_IMAGE_LOC.'logo_water_mark.png';
+        $this->Image($image_file, 30, 95,  150, '', 'PNG', '', 'T', false, 72, '', false, false, 0, false, false, false);
+        
+        
+        $this->Line(10, 48, 200, 48); 
+        
+        // Set font
+        $this->SetFont('helvetica', 'B', 20); 
+         
+    }
+    
 }
 
 /* End of file Pdf.php */

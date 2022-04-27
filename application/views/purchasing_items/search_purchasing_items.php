@@ -109,7 +109,7 @@ $(document).ready(function(){
                             </div>-->
                             <div class="col-md-6"> 
                                 <div class="form-group">
-                                       <label class="col-md-3 control-label">Customer</label>
+                                       <label class="col-md-3 control-label">Supplier</label>
                                            <div class="col-md-9">                                            
                                                <div class="input-group">
                                                    <span class="input-group-addon"><span class="fa fa-search"></span></span>

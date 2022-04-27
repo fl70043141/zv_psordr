@@ -50,7 +50,7 @@ class Order_ecatalog extends CI_Controller {
                 foreach ($item_res as $item){ 
 //                    echo '<pre>';            print_r($input); die;
                     $data['item_res'][$item['id']] = $item; 
-                    $data['item_res'][$item['id']]['price_info'] = $this->Order_ecataog_modal->get_item_price($item['id'],16); 
+                    $data['item_res'][$item['id']]['price_info'] = $this->Order_ecataog_modal->get_item_price($item['id'],15); 
                     
                 }
             }else{

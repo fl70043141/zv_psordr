@@ -648,7 +648,7 @@ class Sales_order_items extends CI_Controller {
             // create new PDF document
             
             $pdf = new Pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->fl_header='header_jewel';//invice bg
+            $pdf->fl_header='header_order';//invice bg
             $pdf->fl_header_title='ORDER';//invice bg
             $pdf->fl_header_title_RTOP='CUSTOMER COPY';//invice bg
             $pdf->fl_footer_text=1;//invice bg
@@ -691,6 +691,8 @@ class Sales_order_items extends CI_Controller {
             
             $pdf->SetTextColor(32,32,32);     
             
+            $customer_address = implode(', ', [$inv_dets['address'], $inv_dets['city']]);
+
             $html = '<table>
                         <tr>
                             <td>Order Date: '.date('m/d/Y',$inv_dets['order_date']).'</td>
@@ -704,11 +706,11 @@ class Sales_order_items extends CI_Controller {
                             <td colspan="2" align="center"></td>
                         </tr>  
                         <tr>
-                            <td>Sold to: '.$inv_dets['customer_name'].'</td>
-                            <td align="right">Branch: '.$inv_dets['branch_name'].'</td>
+                            <td>'.$inv_dets['customer_name'].(($customer_address!="")?"<br>".$customer_address:"").'</td>
+                            <td align="right"></td>
                         </tr>
                         <tr>
-                            <td>Customer Contact Number: '.$inv_dets['phone'].'</td>
+                            <td>Contact Number: '.$inv_dets['phone'].'</td>
                             <td align="right"></td>
                         </tr>
                         <tr><td  colspan="5"><br></td></tr>
@@ -720,11 +722,11 @@ class Sales_order_items extends CI_Controller {
                                 <thead> 
                                     <tr style="">
                                          <th width="12%" style="text-align: left;"><u><b>NL NO</b></u></th>  
-                                         <th width="09%" style="text-align: center;"><u><b>Image</b></u></th>  
-                                         <th width="35%" style="text-align: left;"><u><b>Description</b></u></th>  
-                                         <th width="08%" ><u><b>Qty</b></u></th> 
-                                         <th width="18%" style="text-align: right;"><u><b>Rate</b></u></th> 
-                                         <th width="18%" style="text-align: right;"><u><b>Total</b></u></th> 
+                                         <th width="8%" style="text-align: center;"><u><b>Image</b></u></th>  
+                                         <th width="50%" style="text-align: left;"><u><b>Description</b></u></th>  
+                                         <th width="8%" style="text-align: center;"><u><b>Qty</b></u></th> 
+                                         <th width="10%" style="text-align: right;"><u><b>Rate</b></u></th> 
+                                         <th width="12%" style="text-align: right;"><u><b>Total</b></u></th> 
                                      </tr>
                                 </thead>
                             <tbody>';
@@ -739,11 +741,11 @@ class Sales_order_items extends CI_Controller {
 
                          $html .= '<tr>
                                         <td width="12%" style="text-align: left;">'.$inv_itm['item_code'].'</td>  
-                                        <td width="09%" style="text-align: center;">'.$image_html.'</td>    
-                                        <td width="35%" style="text-align: left;">'.$inv_itm['item_desc'].'</td> 
-                                        <td width="08%" >'.$inv_itm['units'].'</td>  
-                                        <td width="18%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
-                                        <td width="18%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
+                                        <td width="08%" style="text-align: center;">'.$image_html.'</td>    
+                                        <td width="50%" style="text-align: left;">'.$inv_itm['item_desc'].'</td> 
+                                        <td width="8%" style="text-align: center;">'.$inv_itm['units'].'</td>  
+                                        <td width="10%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['unit_price'],2).'</td> 
+                                        <td width="12%" style="text-align: right;">'.$inv_dets['symbol_left'].' '. number_format($inv_itm['sub_total'],2).'</td> 
                                     </tr> ';
                          $order_total+=$inv_itm['sub_total'];
                      } 
